@@ -20,12 +20,12 @@ class TaskSeeder extends Seeder
         $tags = Tag::all();
 
         $users->each(function ($user) use ($tags) {
-            Task::factor()
+            Task::factory()
                 ->count(rand(3,5))
                 ->create(['user_id' => $user->id])
                 ->each(function ($task) use ($tags) {
                     $task->tags()->attach(
-                        $tags->random(rand(1,3))->pluck('id')->toArray()
+                        $tags->random()-id
                     );
                 });
         });
