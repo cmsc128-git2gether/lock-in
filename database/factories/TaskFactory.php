@@ -17,8 +17,9 @@ class TaskFactory extends Factory
      */
     public function definition(): array
     {
+        $user_id = User::first()->id;
         return [
-            'user_id' => User::factory(),
+            'user_id' => $user_id,
             'title' => fake()->sentence(4),
             'description' => fake()->optional()->paragraph(),
             'priority' => fake()->numberBetween(0, 3), // 0 - NA, 1 - Low, 2 - Med, 3 - High
