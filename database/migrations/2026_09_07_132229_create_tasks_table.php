@@ -13,16 +13,15 @@ return new class extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); 
             $table->string('title');
-            $table->string('description', 255);
-            $table->dateTime('due_at');
-            $table->tinyInteger('is_done')->default(false);
-            $table->tinyInteger('is_deleted')->default(false);
-            $table->string('priority');
-            $table->foreignId('user_id')->constrained('users');
+            $table->text('description')->nullable();
+            $table->unsignedTinyInteger('priority')->default(0); // 0 - NA, 1 - low, 2 - med, 3 - high
+            $table->dateTime('due_at')->nullable();
+            $table->boolean('is_done')->default(false);
+            $table->boolean('is_deleted')->default(false);
             $table->timestamps();
         });
-
     }
 
     /**
