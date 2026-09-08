@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Todo;
+use App\Models\Task;
 
-class ToDoController extends Controller
+class TaskController extends Controller
 {
     public function index(){
-        $todos = Todo::all();
-            return view('index', ['todos' => $todos]);
+        $tasks = Task::all();
+            return view('index', ['tasks' => $tasks]);
     }//
 
     public function store(Request $request)
@@ -18,13 +18,13 @@ class ToDoController extends Controller
             'title' => 'required|string|max:255',
         ]); //valid title check
 
-        Todo::create($validated);
+        Task::create($validated);
 
         return redirect('/');
     }
 
     public function update($id){
-        $todo = Todo::findOrFail($id);
+        $todo = Task::findOrFail($id);
         $todo->update(['is_done' => true]);
 
         return redirect('/');
