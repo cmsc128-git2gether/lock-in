@@ -4,26 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Task extends Model
 {
     /** @use HasFactory<\Database\Factories\TaskFactory> */
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     
     protected $fillable = [
-        'user_id',
         'title',
         'description',
         'priority',
         'due_at',
         'is_done',
-        'is_deleted',
+        'tag_id',
     ];
 
     protected $casts = [
         'due_at' => 'datetime',
         'is_done' => 'boolean',
-        'is_deleted' => 'boolean',
+        'deleted_at' => 'datetime',
     ];
 
     public function user() {
@@ -31,6 +31,6 @@ class Task extends Model
     }
 
     public function tags() {
-        return $this->belongsTo(Tag::class, 'task_tags');
+        return $this->belongsTo(Tag::class);
     }
 }

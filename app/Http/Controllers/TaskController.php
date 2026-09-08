@@ -23,10 +23,47 @@ class TaskController extends Controller
         return redirect('/');
     }
 
-    public function update($id){
-        $todo = Task::findOrFail($id);
-        $todo->update(['is_done' => true]);
+    public function done($id){
+        $task = Task::findOrFail($id);
+        $task->done(['is_done' => true]);
 
         return redirect('/');
     }
+
+    // edit
+    public function edit($id){
+        $task = Task::findOrFail($id);
+        // goes to edit page
+        return view('edit', ['task' => $task]); 
+    }
+
+    public function update(Task $task, Request $request){
+        $validated = $request->validate([
+            'title' => 'required',
+            'description' => 'nullable',
+            'priority' => 'required',
+            'due_at' => 'nullable',
+        ]); //validate
+
+        Task::update($validated);
+
+        return redirect('/');
+    }
+
+    // delete
+    public function destroy(Task $task){
+        $task->delete();
+
+        return redirect('/');
+    }
+
+    // for undo/restoration
+    public function restore($id){
+        $task = Task::onlyTrashed()->findOrFail($id);
+        $task = restore();
+
+        return redirect('/');
+    }
+
+    
 }

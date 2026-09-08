@@ -14,13 +14,15 @@ return new class extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade'); 
+            $table->foreignId('tag_id')->nullable()->constrained('tags')->nullOnDelete();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->unsignedTinyInteger('priority')->default(0); // 0 - NA, 1 - low, 2 - med, 3 - high
+            $table->string('priority')->default('Unlabeled'); // unlabeled, low, medium, high
             $table->dateTime('due_at')->nullable();
             $table->boolean('is_done')->default(false);
-            $table->boolean('is_deleted')->default(false);
             $table->timestamps();
+            $table->softDeletes();  // nullable deleted_at
+            $table->index(['user_id', 'deleted_at']); // for deletion and restore
         });
     }
 
