@@ -17,23 +17,35 @@
         </div>
 
         <div>
-            <label>Description</label>
-            <textarea name="description" placeholder="Description">{{$task->description}}</textarea>
-        </div>
-
-        <div>
             <label>Priority</label>
             <select name="priority">
-                <option value="Unlabeled" {{ $task->priority == 'Unlabeled' ? 'selected' : '' }}>Unlabeled</option>
-                <option value="Low" {{ $task->priority == 'Low' ? 'selected' : '' }}>Low</option>
-                <option value="Medium" {{ $task->priority == 'Medium' ? 'selected' : '' }}>Medium</option>
-                <option value="High" {{ $task->priority == 'High' ? 'selected' : '' }}>High</option>
+                <option value="" disabled hidden {{ is_null($task->priority) ? 'selected' : '' }}>--Select Priority--</option>
+                @foreach($priorities as $priority)
+                    <option value="{{ $priority }}" {{ $task->priority == $priority ? 'selected' : '' }}>
+                        {{ $priority }}
+                    </option>
+                @endforeach
             </select>
         </div>
 
         <div>
             <label>Due Date</label>
             <input type="datetime-local" name="due_at" value="{{ $task->due_at ? \Carbon\Carbon::parse($task->due_at)->format('Y-m-d\TH:i') : '' }}" />
+        </div>
+
+        <div>
+            <label for="tag_id">Tag</label>
+            <select name="tag_id" id="tag_id">
+                <option value="" disabled hidden {{ is_null($task->tag_id) ? 'selected' : '' }}>
+                    --Select Tag/Category--
+                </option>
+
+                @foreach($tags as $tag)
+                    <option value="{{ $tag->id }}" {{ $task->tag_id == $tag->id ? 'selected' : '' }}>
+                        {{ $tag->name }}
+                    </option>
+                @endforeach
+            </select>
         </div>
 
         <div>
