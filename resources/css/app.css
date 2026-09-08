@@ -9,3 +9,160 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+
+.header {
+    background: #306479;
+    color: white;
+    display: flex;
+    flex-flow: row wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin-block-end: 1.5rem;
+    padding-block: 1rem;
+
+}
+
+#table-tasks th, td {
+    padding: 15px;
+}
+
+input[type="checkbox"]:checked + label {
+    text-decoration: line-through;
+}
+
+/* ---------- layout ---------- */
+.page-container {
+    min-height: 100vh;
+    background-color: #e6eaed;
+}
+
+.top-bar {
+    height: 80px;
+    width: 100%;
+    background-color: #1e5f6e;
+}
+
+.main-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+}
+
+/* ---------- add task form ---------- */
+.add-task-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.add-task-form input[type="text"] {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+}
+
+.add-task-form button {
+    padding: 0.5rem 1.25rem;
+    background-color: #1e5f6e;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* ---------- card ---------- */
+.task-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.empty-message {
+    padding: 1.5rem;
+    color: #64748b;
+}
+
+/* ---------- toolbar ---------- */
+.task-flex {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.task-header {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    justify-content: space-between;
+}
+
+.task-header h1{
+    font-weight: 700;
+    color: #1e293b;
+    white-space: nowrap;
+}
+
+
+.search-input {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 0.875rem;
+}
+
+/* ---------- table ---------- */
+.task-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.task-table thead th {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94a3b8;
+}
+
+.task-table tbody tr {
+    border-top: 1px solid #f1f5f9;
+}
+
+.task-table td {
+    padding: 1rem 1.5rem;
+    color: #1e293b;
+}
+
+.task-done {
+    opacity: 0.4;
+}
+
+/* ---------- checkbox + label ---------- */
+.checkbox-form {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.checkbox-form input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #1e5f6e;
+}
+
