@@ -2,27 +2,28 @@
 <html>
 <head>
     <title>Todo App</title>
+    <style></style>
 </head>
 <body>
     <h1>My Todos</h1>
 
-    <form action="/todos" method="POST">
+    <form action="/tasks" method="POST">
             @csrf
             <input type="text" name="title" placeholder="Add New Task">
             <button type="submit">Add</button>
     </form>
-    @if ($todos->isEmpty())
+    @if ($tasks->isEmpty())
         <p>No todos yet.</p>
     @else
         
         <ul>
-            @foreach ($todos as $todo)
+            @foreach ($tasks as $task)
                 <li>
-                    {{ $todo->title }}
-                    @if ($todo->is_done)
+                    {{ $task->title }}
+                    @if ($task->is_done)
                         DONE
                     @else
-                        <form action="/todos/{{ $todo->id }}" method="POST" style="display:inline">
+                        <form action="/tasks/{{ $task->id }}" method="POST" style="display:inline">
                             @csrf
                             @method('PATCH')
                             <button type="submit">Mark Done</button>
