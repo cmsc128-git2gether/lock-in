@@ -79,6 +79,46 @@ input[type="checkbox"]:checked + label {
     cursor: pointer;
 }
 
+.popup-modal {
+    margin: auto;
+    padding: 1.5rem;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    max-width: 400px;
+    width: 90%;
+}
+
+.popup-modal::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.popup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.popup-form input,
+.popup-form select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+}
+
+.popup-form label {
+    font-weight: 700;
+}
+
+.close-form {
+    align-self: flex-end;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+
 /* ---------- card ---------- */
 .task-card {
     background-color: #fff;
@@ -113,6 +153,7 @@ input[type="checkbox"]:checked + label {
     font-weight: 700;
     color: #1e293b;
     white-space: nowrap;
+    font-size: 20px;
 }
 
 
