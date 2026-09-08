@@ -17,6 +17,9 @@ class TaskController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
+            'due_at'   => 'nullable|date',
+            'priority' => 'required|in:High,Medium,Low,Unlabeled',
+            'tag'  =>   'required|in:School,Personal,Others', //halp TT
         ]); //valid title check
 
         Task::create($validated);
@@ -24,9 +27,9 @@ class TaskController extends Controller
         return redirect('/');
     }
 
-    public function update($id){
+    public function done(Request $request, $id){
         $task = Task::findOrFail($id);
-        $task->update(['is_done' => true]);
+        $task->update(['is_done' => $request->input('is_done')]);
 
         return redirect('/');
     }
