@@ -17,7 +17,7 @@ class Task extends Model
         'priority',
         'due_at',
         'is_done',
-        'is_delete',
+        'is_deleted',
     ];
 
     protected $casts = [
@@ -31,6 +31,6 @@ class Task extends Model
     }
 
     public function tags() {
-        return $this->belongstoMany(Tag::class, 'task_tags');
+        return $this->belongsTo(Tag::class, 'task_tags');
     }
 }
