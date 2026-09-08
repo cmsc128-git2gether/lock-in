@@ -29,4 +29,30 @@ class TaskController extends Controller
 
         return redirect('/');
     }
+
+    /* idk which table to use so baguhin lang natin 
+     * pwede todo or task; this is js the logic
+    */
+    
+
+    public function edit(Task $task){
+        return view('task.edit', ['task' => $task]);
+    }
+
+    // delete
+    public function destroy(Task $task){
+        $task->delete();
+
+        return redirect('/');
+    }
+
+    // for undo/restoration
+    public function restore($id){
+        $task = Task::onlyTrashed()->findOrFail($id);
+        $task = restore();
+
+        return redirect('/');
+    }
+
+    
 }
