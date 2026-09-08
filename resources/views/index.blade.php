@@ -2,41 +2,61 @@
 <html>
 <head>
     <title>Todo App</title>
-    <style></style>
+    @vite(['resources/css/app.css'])
 </head>
 <body>
-    <h1>My Todos</h1>
-
-    <form action="/tasks" method="POST">
-            @csrf
-            <input type="text" name="title" placeholder="Add New Task">
-            <button type="submit">Add</button>
-    </form>
-    @if ($tasks->isEmpty())
-        <p>No tasks yet.</p>
-    @else
-        
-        <ul>
-            @foreach ($tasks as $task)
-                <li>
-                    {{ $task->title }}
-                    @if ($task->is_done)
-                        DONE
-                    @else
-                        <form action="/tasks/{{ $task->id }}" method="POST" style="display:inline">
-                            @csrf
-                            @method('PATCH')
-                            <button type="submit">Mark Done</button>
-                            <a href="/tasks/{{ $task->id }}/edit">
-                                Edit
-                            </a>
-                        </form>
-                    @endif
-                </li>
-            @endforeach
-        </ul>
-    @endif
-
+    <div class="page-container">
+    <div class="header">
+        <h1>My Todos</h1>
+    </div>
     
+    <div class="main-content">
+        <div class="task-card">
+            <div class="task-flex">
+                <div class=task-header>
+                    <h1> Active Tasks ({{ $tasks->count() }}) </h1>
+                    <div class="add-task-form">
+                        <form action="/tasks" method="POST">
+                        @csrf
+                        <input type="text" name="title" placeholder="Add New Task">
+                        <button type="submit">Add</button>
+                    </form>
+                    </div>
+                </div>
+                @if ($tasks->isEmpty())
+                <p class="empty-message">No todos yet. Make a new one!</p>
+                @else
+                <table id="table-tasks" class="task-table">
+                    <thead>
+                        <tr>
+                            <th>Task</th>
+                            <th>Due Date and Time</th>
+                            <th>Priority</th>
+                            <th>Tag</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach ($tasks as $task)
+                    <tr class="{{ $task->is_done ? 'task-done' : '' }}">
+                        <td>
+                        <form action="/tasks/{{ $task->id }}" method="POST" class="checkbox-form">
+                                @csrf
+                                @method('PATCH')
+                                <input type="hidden" name="is_done" value="0">
+                                <input type="checkbox" class="todo" name="is_done" value="1" @checked($task->is_done) onchange="this.form.submit()">
+                                <label for="todo-{{ $task->id }}">{{ $task->title }}</label>
+                            </form>
+                        </td>
+                    </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+                @endif
+            </div>
+    </div>
+</div>
+    </div>
+    </div>
 </body>
 </html>
