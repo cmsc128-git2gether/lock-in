@@ -20,12 +20,26 @@ class TaskFactory extends Factory
         $user_id = User::first()->id;
         return [
             'user_id' => $user_id,
+            'tag_id' => Tag::inRandomOrder()->value('id'),
             'title' => fake()->sentence(4),
             'description' => fake()->optional()->paragraph(),
-            'priority' => fake()->numberBetween(0, 3), // 0 - NA, 1 - Low, 2 - Med, 3 - High
-            'due_at' => fake()->optional()->dateTimeBetween('now', '+2 weeks'),
-            'is_done' => fake()->boolean(20),
-            'is_deleted' => fake()->boolean(20),
+            'priority' => fake()->randomElement(['Unlabeled', 'Low', 'Medium', 'High']),
+            'due_at' => fake()->optional()->dateTimeBetween('now', '+1 month'),
+            'is_done' => fake()->boolean(40),
         ];
+    }
+
+    // mark as done
+    // public function done(): static {
+    //     return $this->state(fn (array $attributes) => [
+    //         'is_done' => true,
+    //     ]);
+    // }
+
+    // soft deletes
+    public function trashed(): static {
+        return $this->state(fn (array $attributes) => [
+            'deleted_at' => fake()->dateTimeBetween('-1 month', 'now'),
+        ]);
     }
 }

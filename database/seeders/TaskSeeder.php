@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 
 use App\Models\Task;
-use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -16,19 +15,22 @@ class TaskSeeder extends Seeder
      */
     public function run(): void
     {
-        $users = User::all();
-        $tags = Tag::all();
+        $users = User::firstOrFail();
 
-        $users->each(function ($user) use ($tags) {
-            Task::factory()
-                ->count(rand(3,5))
-                ->create(['user_id' => $user->id])
-                ->each(function ($task) use ($tags) {
-                    $task->tags()->attach(
-                        $tags->random()-id
-                    );
-                });
-        });
+        Task::factory()
+            ->count(5)
+            ->for($user)
+            ->create();
+
+        Task::factory()
+            ->count(3)
+            ->for($user)
+            ->create();
+        
+        Task::factory()
+            ->count(1)
+            ->for($user)
+            ->create();
 
     }
 }

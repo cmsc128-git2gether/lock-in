@@ -14,13 +14,13 @@ class TagSeeder extends Seeder
     public function run(): void
     {
         $tags = [
-            'Personal',
-            'School',
-            'Others',
+            ['name' => 'School', 'color' => '#E3563B'],
+            ['name' => 'Personal', 'color' => '#49ad5d'],
+            ['name' => 'Others', 'color' => '#afaeae'],
         ];
 
         foreach ($tags as $tag) {
-            Tag::factory()->create(['name' => $tag]);
+            Tag::firstOrCreate(['name' => $tag['name']], $tag);
         }
     }
 }

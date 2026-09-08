@@ -15,6 +15,9 @@ class TagFactory extends Factory
      *
      * @return array<string, mixed>
      */
+
+    // probably not needed for the actual seeding yet (tags are fixed)
+    // to be used in future implementation
     public function definition(): array
     {
         return [
