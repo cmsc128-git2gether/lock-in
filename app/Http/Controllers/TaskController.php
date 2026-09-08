@@ -23,9 +23,9 @@ class TaskController extends Controller
         return redirect('/');
     }
 
-    public function done($id){
+    public function update($id){
         $task = Task::findOrFail($id);
-        $task->done(['is_done' => true]);
+        $task->update(['is_done' => true]);
 
         return redirect('/');
     }
@@ -37,7 +37,9 @@ class TaskController extends Controller
         return view('edit', ['task' => $task]); 
     }
 
-    public function update(Task $task, Request $request){
+    public function submit($id, Request $request){
+        $task = Task::findOrFail($id);
+
         $validated = $request->validate([
             'title' => 'required',
             'description' => 'nullable',
@@ -45,7 +47,7 @@ class TaskController extends Controller
             'due_at' => 'nullable',
         ]); //validate
 
-        Task::update($validated);
+        $task->update($validated);
 
         return redirect('/');
     }
@@ -65,5 +67,4 @@ class TaskController extends Controller
         return redirect('/');
     }
 
-    
 }

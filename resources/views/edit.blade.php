@@ -7,9 +7,9 @@
 </head>
 <body>
     <h1>Edit Task</h1>
-    <form action="/tasks/{{$task->id}}" method="POST">
+    <form action="/tasks/{{$task->id}}/submit" method="POST">
         @csrf
-        @method('PUT')
+        @method('PATCH')
 
         <div>
             <label>Title</label>
@@ -18,23 +18,22 @@
 
         <div>
             <label>Description</label>
-            <textarea type="text" name="description" placeholder="Description" value="{{$task->description}}" />
-            </textarea>
+            <textarea name="description" placeholder="Description">{{$task->description}}</textarea>
         </div>
 
         <div>
             <label>Priority</label>
             <select name="priority">
-                <option value="Unlabeled">Unlabeled</option>
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
+                <option value="Unlabeled" {{ $task->priority == 'Unlabeled' ? 'selected' : '' }}>Unlabeled</option>
+                <option value="Low" {{ $task->priority == 'Low' ? 'selected' : '' }}>Low</option>
+                <option value="Medium" {{ $task->priority == 'Medium' ? 'selected' : '' }}>Medium</option>
+                <option value="High" {{ $task->priority == 'High' ? 'selected' : '' }}>High</option>
             </select>
         </div>
 
         <div>
             <label>Due Date</label>
-            <input type="datetime-local" name="due_at" placeholder="Due At" value="{{$task->due_at}}" />
+            <input type="datetime-local" name="due_at" value="{{ $task->due_at ? \Carbon\Carbon::parse($task->due_at)->format('Y-m-d\TH:i') : '' }}" />
         </div>
 
         <div>
