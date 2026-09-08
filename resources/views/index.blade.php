@@ -13,7 +13,7 @@
             <button type="submit">Add</button>
     </form>
     @if ($tasks->isEmpty())
-        <p>No todos yet.</p>
+        <p>No tasks yet.</p>
     @else
         
         <ul>
@@ -27,11 +27,16 @@
                             @csrf
                             @method('PATCH')
                             <button type="submit">Mark Done</button>
+                            <a href="/tasks/{{ $task->id }}/edit">
+                                Edit
+                            </a>
                         </form>
                     @endif
                 </li>
             @endforeach
         </ul>
     @endif
+
+    
 </body>
 </html>

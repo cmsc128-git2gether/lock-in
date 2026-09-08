@@ -23,20 +23,31 @@ class TaskController extends Controller
         return redirect('/');
     }
 
-    public function update($id){
-        $todo = Task::findOrFail($id);
-        $todo->update(['is_done' => true]);
+    public function done($id){
+        $task = Task::findOrFail($id);
+        $task->done(['is_done' => true]);
 
         return redirect('/');
     }
 
-    /* idk which table to use so baguhin lang natin 
-     * pwede todo or task; this is js the logic
-    */
-    
+    // edit
+    public function edit($id){
+        $task = Task::findOrFail($id);
+        // goes to edit page
+        return view('edit', ['task' => $task]); 
+    }
 
-    public function edit(Task $task){
-        return view('task.edit', ['task' => $task]);
+    public function update(Task $task, Request $request){
+        $validated = $request->validate([
+            'title' => 'required',
+            'description' => 'nullable',
+            'priority' => 'required',
+            'due_at' => 'nullable',
+        ]); //validate
+
+        Task::update($validated);
+
+        return redirect('/');
     }
 
     // delete
