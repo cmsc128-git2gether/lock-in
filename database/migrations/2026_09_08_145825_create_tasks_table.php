@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade'); 
             $table->foreignId('tag_id')->nullable()->constrained('tags')->nullOnDelete();
             $table->string('title');
-            $table->text('description')->nullable();
             $table->string('priority')->default('Unlabeled'); // unlabeled, low, medium, high
             $table->dateTime('due_at')->nullable();
             $table->boolean('is_done')->default(false);

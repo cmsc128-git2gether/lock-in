@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Task;
+use App\Models\Tag;
 
 class TaskController extends Controller
 {
@@ -36,20 +37,24 @@ class TaskController extends Controller
     // edit
     public function edit($id){
         $task = Task::findOrFail($id);
+        $tags = Tag::all();
+        $priorities = Task:: priorities;
+        
         // goes to edit page
-        return view('edit', ['task' => $task]); 
+        return view('edit', ['task' => $task, 'tags' => $tags, 'priorities' => $priorities]); 
     }
 
-    public function update(Task $task, Request $request){
+    public function submit($id, Request $request){
+        $task = Task::findOrFail($id);
+
         $validated = $request->validate([
             'title' => 'required',
-            'description' => 'nullable',
             'priority' => 'required',
             'due_at' => 'nullable',
-            'tag' => 'required', //should be tag_id i think... pa fix nlang aisdjfasduh
+            'tag_id' => 'nullable',
         ]); //validate
 
-        Task::update($validated);
+        $task->update($validated);
 
         return redirect('/');
     }
@@ -69,5 +74,4 @@ class TaskController extends Controller
         return redirect('/');
     }
 
-    
 }

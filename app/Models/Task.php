@@ -11,9 +11,10 @@ class Task extends Model
     /** @use HasFactory<\Database\Factories\TaskFactory> */
     use HasFactory, SoftDeletes;
     
+    public const priorities = ['Unlabeled', 'Low', 'Medium', 'High'];
+
     protected $fillable = [
         'title',
-        'description',
         'priority',
         'due_at',
         'is_done',
@@ -30,7 +31,7 @@ class Task extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function tags() {
+    public function tag() {
         return $this->belongsTo(Tag::class);
     }
 }

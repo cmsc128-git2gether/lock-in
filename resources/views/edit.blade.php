@@ -7,9 +7,9 @@
 </head>
 <body>
     <h1>Edit Task</h1>
-    <form action="/tasks/{{$task->id}}" method="POST">
+    <form action="/tasks/{{$task->id}}/submit" method="POST">
         @csrf
-        @method('PUT')
+        @method('PATCH')
 
         <div>
             <label>Title</label>
@@ -17,24 +17,35 @@
         </div>
 
         <div>
-            <label>Description</label>
-            <textarea type="text" name="description" placeholder="Description" value="{{$task->description}}" />
-            </textarea>
-        </div>
-
-        <div>
             <label>Priority</label>
             <select name="priority">
-                <option value="Unlabeled">Unlabeled</option>
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
+                <option value="" disabled hidden {{ is_null($task->priority) ? 'selected' : '' }}>--Select Priority--</option>
+                @foreach($priorities as $priority)
+                    <option value="{{ $priority }}" {{ $task->priority == $priority ? 'selected' : '' }}>
+                        {{ $priority }}
+                    </option>
+                @endforeach
             </select>
         </div>
 
         <div>
             <label>Due Date</label>
-            <input type="datetime-local" name="due_at" placeholder="Due At" value="{{$task->due_at}}" />
+            <input type="datetime-local" name="due_at" value="{{ $task->due_at ? \Carbon\Carbon::parse($task->due_at)->format('Y-m-d\TH:i') : '' }}" />
+        </div>
+
+        <div>
+            <label for="tag_id">Tag</label>
+            <select name="tag_id" id="tag_id">
+                <option value="" disabled hidden {{ is_null($task->tag_id) ? 'selected' : '' }}>
+                    --Select Tag/Category--
+                </option>
+
+                @foreach($tags as $tag)
+                    <option value="{{ $tag->id }}" {{ $task->tag_id == $tag->id ? 'selected' : '' }}>
+                        {{ $tag->name }}
+                    </option>
+                @endforeach
+            </select>
         </div>
 
         <div>
