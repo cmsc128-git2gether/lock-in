@@ -36,10 +36,9 @@
         <div>
             <label for="tag_id">Tag</label>
             <select name="tag_id" id="tag_id">
-                <option value="" disabled hidden {{ is_null($task->tag_id) ? 'selected' : '' }}>
+                <option value="" disabled {{ is_null($task->tag_id) ? 'selected' : '' }}>
                     --Select Tag/Category--
                 </option>
-
                 @foreach($tags as $tag)
                     <option value="{{ $tag->id }}" {{ $task->tag_id == $tag->id ? 'selected' : '' }}>
                         {{ $tag->name }}
