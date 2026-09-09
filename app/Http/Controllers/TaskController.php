@@ -3,14 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+// use App\Models\User;
 use App\Models\Task;
 use App\Models\Tag;
+
 
 class TaskController extends Controller
 {
     public function index(){
         $tasks = Task::all();
-            return view('index', ['tasks' => $tasks]);
+        $tags = Tag::all();
+        $priorities = Task:: priorities;
+            return view('index', ['tasks' => $tasks, 'tags' => $tags, 'priorities' => $priorities]);
     }//
 
     public function store(Request $request)
@@ -19,7 +23,7 @@ class TaskController extends Controller
             'title' => 'required|string|max:255',
             'due_at'   => 'nullable|date',
             'priority' => 'required|in:High,Medium,Low,Unlabeled',
-            'tag'  =>   'required|in:School,Personal,Others', //halp TT
+            'tag_id'  =>   'required|exists:tags,id', //halp TT
         ]); //valid title check
 
         Task::create($validated);
@@ -27,7 +31,7 @@ class TaskController extends Controller
         return redirect('/');
     }
 
-    public function done(Request $request, $id){
+    public function update(Request $request, $id){
         $task = Task::findOrFail($id);
         $task->update(['is_done' => $request->input('is_done')]);
 
@@ -59,11 +63,17 @@ class TaskController extends Controller
         return redirect('/');
     }
 
+    // sabaw na ko masyado di ko maintindihan softdeletes TT
     // delete
     public function destroy(Task $task){
         $task->delete();
 
         return redirect('/');
+    }
+
+    // no undo; permanent deletion
+    public function forceDelete($id) {
+
     }
 
     // for undo/restoration

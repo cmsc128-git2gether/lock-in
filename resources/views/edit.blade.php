@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Task</title>
+    @vite(['resources/css/app.css'])
 </head>
 <body>
     <h1>Edit Task</h1>
@@ -36,10 +37,9 @@
         <div>
             <label for="tag_id">Tag</label>
             <select name="tag_id" id="tag_id">
-                <option value="" disabled hidden {{ is_null($task->tag_id) ? 'selected' : '' }}>
+                <option value="" disabled {{ is_null($task->tag_id) ? 'selected' : '' }}>
                     --Select Tag/Category--
                 </option>
-
                 @foreach($tags as $tag)
                     <option value="{{ $tag->id }}" {{ $task->tag_id == $tag->id ? 'selected' : '' }}>
                         {{ $tag->name }}
