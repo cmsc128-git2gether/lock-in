@@ -27,7 +27,18 @@
                     <div class="task-header">
                         <h1>Active Tasks ({{ $tasks->count() }})</h1>
                         <div class="header-actions">
-                            
+                            <div class="th-sort">
+                                <label id="label-sort">Sort by:
+                                    <div class="th-sort-choices">
+                                        <select name="sort" id="sortSelect" onchange="sortTable(this.value)">
+                                            <option value="created_at">Date Added</option>
+                                            <option value="due_at">Due Date and Time</option>
+                                            <option value="priority">Priority</option>
+                                            <option value="tag_id">Tag</option>
+                                        </select>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
 
 
@@ -75,8 +86,11 @@
                             <tbody>
                             @foreach ($tasks as $task)
                                 <tr class="{{ $task->is_done ? 'task-done' : '' }}"
+                                        data-created="{{ $task->created_at }}"
+                                        data-due="{{ $task->due_at }}"
                                         data-priority="{{ $task->priority }}"
                                         data-tag="{{ $task->tag->name ?? '' }}"
+                                        data-tag-id="{{ $task->tag_id ?? 0 }}"
                                         data-status="{{ $task->is_done ? 'done' : 'active' }}">
                                     <td>
                                         <form action="/tasks/{{ $task->id }}" method="POST" class="checkbox-form">
@@ -109,7 +123,7 @@
                                                 <form class="delete-form" data-task-id="{{ $task->id }}" data-task-title="{{ $task->title }}" style="margin:0">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="button" class="dropdown-item delete" onclick="handleDelete(this)">Delete</button>
+                                                    <button type="button" class="dropdown-item delete" onclick="return confirm ('Are you sure you want to delete this task?') && handleDelete(this)">Delete</button>
                                                 </form>
                                             </div>
                                         </div>
