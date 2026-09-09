@@ -14,4 +14,4 @@ Route::patch('/tasks/{id}/submit', [TaskController::class, 'submit']);
 
 // delete task
 Route::delete('/tasks/{id}/destroy', [TaskController::class, 'destroy']);
-// Route::restore('/tasks/{id}/restore', [TaskController::class, 'restore']);
+Route::patch('/tasks/{id}/restore', [TaskController::class, 'restore']);

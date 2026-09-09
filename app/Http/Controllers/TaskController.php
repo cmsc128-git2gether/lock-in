@@ -65,10 +65,12 @@ class TaskController extends Controller
 
     // sabaw na ko masyado di ko maintindihan softdeletes TT
     // delete
-    public function destroy(Task $task){
-        $task->delete();
+    public function destroy(Task $task, $id){
+    $task = Task::findOrFail($id);
+    
+    $task->delete();
 
-        return redirect('/');
+        return response()->json(['success' => true]);
     }
 
     // no undo; permanent deletion
@@ -79,9 +81,9 @@ class TaskController extends Controller
     // for undo/restoration
     public function restore($id){
         $task = Task::onlyTrashed()->findOrFail($id);
-        $task = restore();
+        $task->restore();
 
-        return redirect('/');
+        return response()->json(['success' => true]);
     }
 
 }
