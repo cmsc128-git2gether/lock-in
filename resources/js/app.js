@@ -22,8 +22,10 @@ document.addEventListener('click', () => {
 function handleDelete(button){
     const form = button.closest('.delete-form');
     const taskId = form.dataset.taskId;
-    const taskTitle = form. dataset.taskTitle;
+    const taskTitle = form.dataset.taskTitle;
     const row = button.closest('tr');
+
+    row.style.display = 'none';
 
     fetch(`/tasks/${taskId}/destroy`, {
         method: 'DELETE',
@@ -48,17 +50,26 @@ function showUndo(taskId, taskTitle, row){
 
     const notif = document.createElement('div');
     notif.className='notif';
-    notif.innerHTML = `<span>Deleted "${taskTitle}"</span>
-        <button type="button" class="notif-undo">Undo</button>
-    `;
+    notif.innerHTML = `
+            <div class="notif-content">
+                <span>Deleted "${taskTitle}"</span>
+                <button type="button" class="notif-undo">Undo</button>
+            </div>
+            <div class="notif-progress"></div>
+        `;
 
     container.appendChild(notif);
 
-    //remove once undo time window passes
+    const duration = 3000;
+    const progressBar = notif.querySelector('.notif-progress');
+    progressBar.style.animationDuration = `${duration}ms`;
+
     const timeout = setTimeout(() => {
         notif.remove();
         row.remove();
-    }, 5000);
+    }, duration);
+
+
 
     //if clicked, restore
     notif.querySelector('.notif-undo').addEventListener('click', () => {
@@ -116,6 +127,15 @@ function applyFilters() {
 document.addEventListener('click', () => {
     document.querySelectorAll('.th-filter-choices.show, .dropdown-choices.show').forEach(el => el.classList.remove('show'));
 });
+
+function togglePopup() {
+    const overlay = document.getElementById('popupOverlay');
+    overlay.classList.toggle('active');
+}
+
+
+
+
 
 window.toggleColFilter = toggleColFilter;
 window.filterByColumn = filterByColumn;

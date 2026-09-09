@@ -63,7 +63,6 @@ class TaskController extends Controller
         return redirect('/');
     }
 
-    // sabaw na ko masyado di ko maintindihan softdeletes TT
     // delete
     public function destroy(Task $task, $id){
     $task = Task::findOrFail($id);
