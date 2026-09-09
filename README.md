@@ -1,4 +1,4 @@
-# My Todos
+# Lock In (Working Title)
 
 A simple todo list app with task priorities, tags, soft-delete with undo, and column-based filtering and sorting. Made with Laravel and love <3.
 
