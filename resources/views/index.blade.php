@@ -45,7 +45,7 @@
                         <table id="table-tasks" class="task-table">
                             <thead>
                                 <tr>
-                                    <th>Task</th>
+                                    <th>Task Name</th>
                                     <th>Due Date and Time</th>
                                     <th>
                                         <div class="th-filter">
@@ -130,14 +130,14 @@
         <h2>Add a new Task</h2>
         <form action="/tasks" class="popup-form" method="POST">
             @csrf
-            <label for="title">Task Name</label>
+            <label for="title">Task Name*</label>
             <input type="text" id="title" name="title" placeholder="Add New Task" required>
 
             <label for="due_at">Task Due Date and Time</label>
             <input type="datetime-local" id="due_at" name="due_at">
             <!-- im not sane enough to write js to validate date and time rn.. -->
 
-            <label for="priority">Task Priority</label>
+            <label for="priority">Task Priority*</label>
             <select name="priority" required>
                 <option disabled selected value>--Select Priority--</option>
                 @foreach ($priorities as $priority)
@@ -147,7 +147,7 @@
                 @endforeach
             </select>
 
-            <label for="tag">Task Tag</label>
+            <label for="tag">Task Tag*</label>
             <select name="tag_id" id="tag_id" required>
                 <option disabled selected value>--Select Tag/Category--</option>
                 @foreach ($tags as $tag)
@@ -198,6 +198,8 @@
         </dialog>
     @endforeach
     <div id="notif-container"></div>
+
+
 
 </body>
 </html>

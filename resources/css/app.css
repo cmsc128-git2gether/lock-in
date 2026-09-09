@@ -89,14 +89,23 @@ input[type="checkbox"]:checked + label {
     width: 90%;
 }
 
+.popup-modal h2{
+    font-size: 25px;
+    font-weight: 700;
+    padding-top: 10px;
+}
+
 .popup-modal::backdrop {
     background: rgba(0, 0, 0, 0.5);
 }
 
 .popup-form {
+    position: relative;
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;
     gap: 0.75rem;
+    padding-top: 2.5rem;
 }
 
 .popup-form input,
@@ -111,13 +120,32 @@ input[type="checkbox"]:checked + label {
 }
 
 .close-form {
+    position: absolute;
+    top: 0.7rem;
+    right: 1rem;
+
     align-self: flex-end;
-    background: none;
-    border: none;
+    border-radius: 5px;
+    padding: .5em;
     cursor: pointer;
     font-size: 1rem;
+    color: white;
+    background-color: rgb(172, 171, 171);
+    line-height: 1;
 }
 
+.popup-form button[type="submit"] {
+    display: inline-block;
+    border-radius: 3px;
+    padding: .2em .5em .3em;
+    border-radius: 9px;
+    background-color: rgb(126, 126, 196);
+    color: white;
+}
+
+.popup-form button[type="submit"]:hover {
+    cursor: pointer;
+}
 
 /* ---------- card ---------- */
 .task-card {
@@ -166,12 +194,12 @@ input[type="checkbox"]:checked + label {
 /* ---------- table ---------- */
 .task-table {
     width: 100%;
-    border-collapse: separate;
+    border-collapse: collapse;
     text-align: left;
     border-radius: 12px;
 }
 
-/* fixes for the cutoff drop down*/
+/* ---------- fixes for the cutoff drop down ---------- */
 
 .task-table thead th:first-child {
     border-top-left-radius: 12px;
@@ -206,6 +234,15 @@ input[type="checkbox"]:checked + label {
     color: #1e293b;
 }
 
+.task-table tbody tr:hover {
+    background-color: rgba(175, 175, 175, 0.158);
+    border-color: rgba(175, 175, 175, 0.158);
+}
+
+.task-table tbody tr:hover td {
+    border-color: rgba(175, 175, 175, 0.158);
+}
+
 .task-done {
     opacity: 0.4;
 }
@@ -224,7 +261,7 @@ input[type="checkbox"]:checked + label {
 }
 
 
-/* dropdown for actions */
+/* ---------- dropdown for actions ---------- */
 .action-dropdown {
     position: sticky;
     display: inline-block;
@@ -290,7 +327,7 @@ input[type="checkbox"]:checked + label {
     background-color: #fff5f5;
 }
 
-/*undo notif */
+/* ---------- undo notif ---------- */
 #notif-container {
     position: fixed;
     bottom: 20px;
@@ -307,33 +344,47 @@ input[type="checkbox"]:checked + label {
     color: #fff;
     padding: 10px 16px;
     border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    position: relative;
+}
+
+.notif-content {
     display: flex;
     align-items: center;
     gap: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    animation: notif-in 0.2s ease-out;
+}
+
+.notif-progress {
+    height: 3px;
+    background-color: #7dd3fc;
+    width: 100%;
+    margin-top: 8px;
+    animation: shrink linear forwards;
+}
+
+@keyframes shrink {
+    from { width: 100%; }
+    to { width: 0%; }
 }
 
 .notif-undo {
-    background: none;
-    border: none;
-    color: #7dd3fc;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 0;
+    text-decoration: underline;
 }
 
 .notif-undo:hover {
-    text-decoration: underline;
+    cursor: pointer;
 }
 
 @keyframes notif-in {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
+    
 }
 
 
-/* badges */
+
+/* ---------- badges ---------- */
 .tag {
     display: inline-block;
     border-radius: 3px;
@@ -367,7 +418,11 @@ input[type="checkbox"]:checked + label {
     color: #fff;
 }
 
-/* filters */
+/* ---------- filters ---------- */
+.th-filter-choices button {
+    text-decoration: underline;
+}
+
 .th-filter-choices button:hover {
     cursor: pointer;
     background-color: gray;
