@@ -14,8 +14,8 @@ class TagSeeder extends Seeder
     public function run(): void
     {
         $tags = [
-            ['name' => 'School', 'color' => '#E3563B'],
-            ['name' => 'Personal', 'color' => '#49ad5d'],
+            ['name' => 'School', 'color' => '#ec7c66'],
+            ['name' => 'Personal', 'color' => '#6cb07a'],
             ['name' => 'Others', 'color' => '#afaeae'],
         ];
 

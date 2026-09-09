@@ -348,17 +348,17 @@ input[type="checkbox"]:checked + label {
 }
 
 .priority.High {
-    background-color: red;
+    background-color: rgb(196, 72, 72);
     color: #fff;
 }
 
 .priority.Medium {
-    background-color: orange;
+    background-color: rgb(212, 146, 48);
     color: #fff;
 }
 
 .priority.Low {
-    background-color: #22c55e;
+    background-color: #289650;
     color: #fff;
 }
 
@@ -372,4 +372,43 @@ input[type="checkbox"]:checked + label {
     cursor: pointer;
     background-color: gray;
     color: white;
+}
+
+/* sort */
+.th-sort {
+    display: flex;
+    align-items: center;
+}
+
+.th-sort label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #4b5563;
+}
+
+#sortSelect {
+    padding: 6px 12px;
+    margin-right: 15px;
+    margin-bottom: 17px;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: #1e293b;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+#sortSelect:hover {
+    border-color: #cbd5e1;
+}
+
+#sortSelect:focus {
+    border-color: #1e5f6e;
+    box-shadow: 0 0 0 3px rgba(30, 95, 110, 0.15);
 }
