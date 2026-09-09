@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Todo App</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/css/app.css','resources/js/app.js'])
 </head>
 <body>
@@ -12,19 +13,25 @@
 
         <div class="main-content">
             @if ($errors->any())
-    <div style="background:#fee2e2; color:#991b1b; padding:12px; margin-bottom:12px; border-radius:6px;">
-        <strong>Please fix the following:</strong>
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+            <div style="background:#fee2e2; color:#991b1b; padding:12px; margin-bottom:12px; border-radius:6px;">
+                <strong>Uh oh! ERROR:</strong>
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
             <div class="task-card">
                 <div class="task-flex">
                     <div class="task-header">
                         <h1>Active Tasks ({{ $tasks->count() }})</h1>
+                        <div class="header-actions">
+                            
+                        </div>
+
+
+
                         <div class="add-task-form">
                             <button class="open-form" onclick="document.getElementById('form-popup').showModal()">
                                 + Add New Task
@@ -40,14 +47,37 @@
                                 <tr>
                                     <th>Task</th>
                                     <th>Due Date and Time</th>
-                                    <th>Priority</th>
-                                    <th>Tag</th>
+                                    <th>
+                                        <div class="th-filter">
+                                            <span onclick="toggleColFilter(event)">Priority</span>
+                                            <div class="th-filter-choices">
+                                                <button type="button" onclick="filterByColumn('priority', '')">All</button>
+                                            @foreach ($priorities as $priority)
+                                                <button type="button" onclick="filterByColumn('priority', '{{ $priority }}')">{{ $priority }}</button>
+                                            @endforeach
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="th-filter">
+                                            <span onclick="toggleColFilter(event)">Tag</span>
+                                            <div class="th-filter-choices">
+                                                <button type="button" onclick="filterByColumn('tag', '')">All</button>
+                                            @foreach ($tags as $tag)
+                                                <button type="button" onclick="filterByColumn('tag', '{{ $tag->name }}')">{{ $tag->name }}</button>
+                                            @endforeach
+                                            </div>
+                                        </div>
+                                    </th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                             @foreach ($tasks as $task)
-                                <tr class="{{ $task->is_done ? 'task-done' : '' }}">
+                                <tr class="{{ $task->is_done ? 'task-done' : '' }}"
+                                        data-priority="{{ $task->priority }}"
+                                        data-tag="{{ $task->tag->name ?? '' }}"
+                                        data-status="{{ $task->is_done ? 'done' : 'active' }}">
                                     <td>
                                         <form action="/tasks/{{ $task->id }}" method="POST" class="checkbox-form">
                                             @csrf
@@ -57,11 +87,15 @@
                                             <label for="todo-{{ $task->id }}">{{ $task->title }}</label>
                                         </form>
                                     </td>
-                                    <td>{{ $task->due_at ? \Carbon\Carbon::parse($task->due_at)->format('M d, Y g:i A') : '—' }}</td>
-                                    <td>{{ $task->priority }}</td>
+                                    <td>{{ $task->due_at ? \Carbon\Carbon::parse($task->due_at)->format('M d, Y  |  g:i A') : '—' }}</td>
+                                    <td>
+                                        <span  class="priority {{ $task->priority }}">
+                                        {{ $task->priority }}
+                                        </span>
+                                    </td>
                                     <td>
                                         @if ($task->tag)
-                                            <span style="background-color: {{ $task->tag->color }}">
+                                            <span class="tag" style="background-color: {{ $task->tag->color }}">
                                                 {{ $task->tag->name }}
                                             </span>
                                         @endif
@@ -71,11 +105,11 @@
                                             <button class="action-btn" onclick="toggle(event)" type="button">&#8942;</button>
 
                                             <div class="dropdown-choices">
-                                                <a href="/tasks/{{ $task->id }}/edit" class="dropdown-item">Edit</a>
-                                                <form action="/tasks/{{ $task->id }}/destroy" method="POST" style="margin:0" onsubmit="return confirm('Are you sure you want to delete this task?');">
+                                                <button type="button" class="dropdown-item" onclick="document.getElementById('edit-popup-{{ $task->id }}').showModal()">Edit</button>
+                                                <form class="delete-form" data-task-id="{{ $task->id }}" data-task-title="{{ $task->title }}" style="margin:0">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="dropdown-item delete">Delete</button>
+                                                    <button type="button" class="dropdown-item delete" onclick="handleDelete(this)">Delete</button>
                                                 </form>
                                             </div>
                                         </div>
@@ -92,7 +126,8 @@
 
     <!-- new task form popup -->
     <dialog id="form-popup" class="popup-modal">
-        <button class="close-form" onclick="document.getElementById('form-popup').close()">✕</button>
+        <button class="close-form" onclick="document.getElementById('form-popup').close()">X</button>
+        <h2>Add a new Task</h2>
         <form action="/tasks" class="popup-form" method="POST">
             @csrf
             <label for="title">Task Name</label>
@@ -123,5 +158,46 @@
             <button type="submit">Add</button>
         </form>
     </dialog>
+
+    <!-- edit task popup, same concept with add form popup -->
+    @foreach ($tasks as $task)
+        <dialog id="edit-popup-{{ $task->id }}" class="popup-modal">
+            <button class="close-form" onclick="document.getElementById('edit-popup-{{ $task->id }}').close()">X</button>
+            <h2>Edit Task</h2>
+            <form action="/tasks/{{ $task->id }}/submit" class="popup-form" method="POST">
+                @csrf
+                @method('PATCH')
+                <label for="title-{{ $task->id }}">Task Name</label>
+                <input type="text" id="title-{{ $task->id }}" name="title" value="{{ $task->title }}" required>
+
+                <label for="due_at-{{ $task->id }}">Task Due Date and Time</label>
+                <input type="datetime-local" id="due_at-{{ $task->id }}" name="due_at"
+                    value="{{ $task->due_at ? \Carbon\Carbon::parse($task->due_at)->format('Y-m-d\TH:i') : '' }}">
+
+                <label for="priority-{{ $task->id }}">Task Priority</label>
+                <select name="priority" id="priority-{{ $task->id }}" required>
+                    @foreach ($priorities as $priority)
+                        <option value="{{ $priority }}" @selected($task->priority === $priority)>
+                            {{ $priority }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <label for="tag_id-{{ $task->id }}">Task Tag</label>
+                <select name="tag_id" id="tag_id-{{ $task->id }}">
+                    <option value="">--No Tag--</option>
+                    @foreach ($tags as $tag)
+                        <option value="{{ $tag->id }}" @selected($task->tag_id === $tag->id)>
+                            {{ $tag->name }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <button type="submit">Save</button>
+            </form>
+        </dialog>
+    @endforeach
+    <div id="notif-container"></div>
+
 </body>
 </html>
