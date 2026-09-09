@@ -1,59 +1,116 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# My Todos
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A simple todo list app with task priorities, tags, soft-delete with undo, and column-based filtering and sorting. Made with Laravel and love <3.
 
-## About Laravel
+## Project Structure
+Laravel splits backend logic across two folders (`routes` and `app`).
+- `app/` Controllers, Models (business/CRUD logic)
+- `routes/` Route definitions (API/web endpoints)
+- `resources/` Frontend views (Blade templates), CSS, JS
+- `database/` Migrations and seeders
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Tech Stack
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+| Layer | Choice | Why |
+|---|---|---|
+| Backend framework | **Laravel** (PHP) | Built-in routing, Eloquent ORM, and migrations make CRUD + relationships  fast to set up without manually coding SQL. |
+| Database | **MySQL** | Relational structure fits the data well — tasks belong to tags via a foreign key (`tag_id`), and Eloquent's relationship methods (`belongsTo`/`hasMany`) can easily map between models. |
+| Frontend | **Blade templates**| Blade keeps the view layer in PHP alongside the backend (no separate frontend framework/build step for components. |
+| Asset bundling | **Vite** | Laravel's default asset bundler. Compiles and hot-reloads CSS/JS during development (`npm run dev`). |
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## Learning Laravel
+## Running the App Locally
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Requirements
+- PHP >= 8.2
+- Composer
+- Node.js & npm
+- MySQL (or another supported DB)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Setup Steps
 
-## Laravel Sponsors
+1. **Clone the repo**
+   ```
+   git clone https://github.com/cmsc128-git2gether/lock-in
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+2. **Install PHP dependencies**
+   ```
+   composer install
+   ```
 
-### Premium Partners
+3. **Install JS dependencies**
+   ```bash
+   npm install
+   ```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+4. **Copy the environment file and generate an app key**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-## Contributing
+5. **Configure your database**
+   Open `.env` and set:
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=toDo
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
+   Make sure the database itself exists (create it manually in MySQL if needed).
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+6. **Run migrations and seed the database**
+   ```
+   php artisan migrate --seed
+   ```
+   This creates the `tasks` and `tags` tables, and seeds a few predefined tags (School, Personal, Others).
 
-## Code of Conduct
+7. **Build frontend assets**
+   ```
+   npm run dev
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+8. **Start the local server**
+   ```
+   php artisan serve
+   ```
 
-## Security Vulnerabilities
+9. **Open the App** \
+   Ctrl+Click on the local host url to access the app.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Data Operations (Routes)
+
+Routes are used directly by Blade forms and JavaScript `fetch` calls within the app itself. All routes are defined in `routes/web.php`.
+
+| Method | Endpoint | Controller Method | Description |
+|---|---|---|---|
+| `GET` | `/` | `TaskController@index` | Loads the task list, tags, and priority options for the main page. |
+| `POST` | `/tasks` | `TaskController@store` | Creates a new task (title, due date, priority, tag). Used by the "Add New Task" popup. |
+| `PATCH` | `/tasks/{id}` | `TaskController@update` | Changes bool value of a task's `is_done` status. Toggled by checkbox. |
+| `PATCH` | `/tasks/{id}/submit` | `TaskController@submit` | Saves edits to an existing task (title, due date, priority, tag) from the Edit popup. |
+| `DELETE` | `/tasks/{id}/destroy` | `TaskController@destroy` | Soft-deletes a task (sets `deleted_at`). Triggered via `fetch` from the Delete button; the row hides immediately and shows an "Undo" toast. |
+| `PATCH` | `/tasks/{id}/restore` | `TaskController@restore` | Restores a soft-deleted task (clears `deleted_at`). Triggered via `fetch` when "Undo" is clicked within the toast window. |
+
+### Example: Creating a task (`POST /tasks`)
+
+Request body:
+```
+title=Finish CMSC 130 lab
+due_at=2026-09-15T23:59
+priority=High
+tag_id=1
+```
+
+Response: \
+redirects back to `/` with the new task visible in the list.
+
+## Screenshots of the App
+<img src="https://i.ibb.co/DPxqt9Kn/Screenshot-2026-09-09-at-23-26-38-Todo-App.png" alt="Screenshot-2026-09-09-at-23-26-38-Todo-App" border="0">
+<a href="https://ibb.co/zWq2yVSH"><img src="https://i.ibb.co/9mQ4FHq3/Screenshot-2026-09-09-at-23-30-08-Todo-App.png" alt="Screenshot-2026-09-09-at-23-30-08-Todo-App" border="0"></a>
+<a href="https://ibb.co/20tjnN02"><img src="https://i.ibb.co/9mTq8tmX/Screenshot-2026-09-09-at-23-30-38-Todo-App.png" alt="Screenshot-2026-09-09-at-23-30-38-Todo-App" border="0"></a>
+
