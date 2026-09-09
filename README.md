@@ -50,7 +50,7 @@ Laravel splits backend logic across two folders (`routes` and `app`).
    php artisan key:generate
    ```
 
-5. **Configure your database**
+5. **Configure your database**\
    Open `.env` and set:
    ```env
    DB_CONNECTION=mysql
