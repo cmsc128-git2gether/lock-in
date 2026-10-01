@@ -17,9 +17,9 @@ class TaskFactory extends Factory
      */
     public function definition(): array
     {
-        $user_id = User::first()->id;
+        // $user_id = User::get()->id;
         return [
-            'user_id' => $user_id,
+            // s'user_id' => $user_id,
             'tag_id' => Tag::inRandomOrder()->value('id'),
             'title' => fake()->sentence(4),
             'priority' => fake()->randomElement(Task::priorities),

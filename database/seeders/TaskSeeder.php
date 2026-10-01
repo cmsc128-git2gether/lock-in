@@ -15,7 +15,7 @@ class TaskSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::firstOrFail();
+        $user = User::factory();
 
         Task::factory()
             ->count(5)
@@ -28,7 +28,7 @@ class TaskSeeder extends Seeder
             ->create();
         
         Task::factory()
-            ->count(1)
+            ->count(8)
             ->for($user)
             ->create();
 
