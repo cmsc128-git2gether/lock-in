@@ -1,6 +1,4 @@
 <x-app-layout>
-    <x-slot name="header">Profile</x-slot>
-
     <div class="profile-card">
         <h2>Profile Information</h2>
         <p class="profile-desc">Update your name and email address.</p>
@@ -11,11 +9,5 @@
         <h2>Update Password</h2>
         <p class="profile-desc">Use a long, random password to stay secure.</p>
         @include('profile.partials.update-password-form')
-    </div>
-
-    <div class="profile-card">
-        <h2>Delete Account</h2>
-        <p class="profile-desc">Once deleted, all of your tasks and data will be permanently removed.</p>
-        @include('profile.partials.delete-user-form')
     </div>
 </x-app-layout>
