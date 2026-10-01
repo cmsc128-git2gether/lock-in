@@ -25,8 +25,8 @@ Laravel splits backend logic across two folders (`routes` and `app`).
 |---|---|---|
 | Backend framework | **Laravel** (PHP) | Built-in routing, Eloquent ORM, and migrations make CRUD + relationships  fast to set up without manually coding SQL. |
 | Database | **MySQL** | Relational structure fits the data well. Tasks belong to tags via a foreign key (`tag_id`), and Eloquent's relationship methods (`belongsTo`/`hasMany`) can easily map between models. |
-| Frontend | **Blade templates**| Blade keeps the view layer in PHP alongside the backend (no separate frontend framework/build step for components. |
-| Authentication approach | **Breeze** | Implements Laravel's authentication methods, such as login, register, password reset, emil verification, and email information. |
+| Frontend | **Blade templates**| Blade keeps the view layer in PHP alongside the backend (no separate frontend framework/build step for components.) |
+| Authentication approach | **Breeze** | Implements Laravel's authentication methods, such as login, register, password reset, email verification, and email information. |
 | Asset bundling | **Vite** | Laravel's default asset bundler. Compiles and hot-reloads CSS/JS during development (`npm run dev`). |
 
 
