@@ -13,29 +13,30 @@ Route::get('/', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    //----------- TASK ROUTES -------------
+    // create tasks
+    //change for homepage to have explicit route name
+
+
+    Route::get('/home', [TaskController::class, 'index'])->name('dashboard')->middleware('auth');
+        
+    Route::post('/tasks', [TaskController::class, 'store']);
+    Route::patch('/tasks/{id}', [TaskController::class, 'update']);
+
+    // edit tasks
+    Route::get('/tasks/{id}/edit', [TaskController::class, 'edit']);
+    Route::patch('/tasks/{id}/submit', [TaskController::class, 'submit']);
+
+    // delete task
+    Route::delete('/tasks/{id}/destroy', [TaskController::class, 'destroy']);
+    Route::patch('/tasks/{id}/restore', [TaskController::class, 'restore']);
+
 });
 
 
-//----------- TASK ROUTES -------------
-// create tasks
-//change for homepage to have explicit route name
-
-
-Route::get('/home', [TaskController::class, 'index'])->name('dashboard')->middleware('auth');
-    
-Route::post('/tasks', [TaskController::class, 'store']);
-Route::patch('/tasks/{id}', [TaskController::class, 'update']);
-
-// edit tasks
-Route::get('/tasks/{id}/edit', [TaskController::class, 'edit']);
-Route::patch('/tasks/{id}/submit', [TaskController::class, 'submit']);
-
-// delete task
-Route::delete('/tasks/{id}/destroy', [TaskController::class, 'destroy']);
-Route::patch('/tasks/{id}/restore', [TaskController::class, 'restore']);
 
 require __DIR__.'/auth.php';
