@@ -144,8 +144,8 @@ Authentication routes are defined in `routes/auth.php`.
 | `POST` | `/register` | `RegisteredUserController@store` | Enables the form submission for registration. Validates the user input for auth. Creates the profile of the newly registered user. |
 | `GET` | `/login` | `AuthenticatedSessionController@create` | Shows login page. |
 | `POST` | `/login` | `AuthenticatedSessionController@store` | Handles the login form submission, checking the existing account of the user to the database. Starts the session of the user in using the web app. |
-| `GET` | `/forget-password` | `PasswordResetLinkController@create` | Shows the  page where the user can enter their email to get a reset password link. |
-| `POST` | `/forget-password` | `PasswordResetLinkController@store` | Gets the reset password request of the user and submits it to the system. Sends the email to the user requesting for a password reset. |
+| `GET` | `/forgot-password` | `PasswordResetLinkController@create` | Shows the  page where the user can enter their email to get a reset password link. |
+| `POST` | `/forgot-password` | `PasswordResetLinkController@store` | Gets the reset password request of the user and submits it to the system. Sends the email to the user requesting for a password reset. |
 | `GET` | `/reset-password/{token}` | `NewPasswordController@create` | Shows password reset form page where the user can enter a new password. This link is from the password reset email. |
 | `POST` | `/reset-password/{token}` | `NewPasswordController@store` | Stores the new password of the user and logs the user again. |
 | `GET` | `/verify-email` | `EmailVerificationPromptController` | Prompts the notice to the user for email verification sent in their emails. |
@@ -180,5 +180,12 @@ This app uses Laravel's built-in session authentication (Laravel Breeze).
 Because HTTP is stateless, the app uses server-side sessions to remember who is logged in.
 
 1. Upon login success,  session ID is regenerated to prevent session fixation, and the user's ID is stored in the session.
-3. The browser keeps only an encrypted session cookie. On each request, Laravel uses it to load the current user.
-4. On logout (`POST /logout`), the session is invalidated and the CSRF token is regenerated.
+2. The browser keeps only an encrypted session cookie. On each request, Laravel uses it to load the current user.
+3. On logout (`POST /logout`), the session is invalidated and the CSRF token is regenerated.
+
+
+### Password Recovery
+
+1. When the user requests for password recovery, the system loads the reset password (`GET /forgot-password`) page, which requires them to submit their email address.
+2. Then upon submitting the form, it will looking for the user's email, generates a hashed token, and sends a password reset email to the user (`POST /forgot-password`).
+3. User opens the emailed link, validates if it has not expired yet, and user can enter a new password. The system updates the password of the user.
