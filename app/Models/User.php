@@ -33,6 +33,7 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+    //protects against leaking a hashed password, laravel automatically removes from output
 
     /**
      * Get the attributes that should be cast.
@@ -43,7 +44,11 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password' => 'hashed', //automatically hashes each time a password is made
         ];
+    }
+
+    public function tasks(){
+        return $this->hasMany(Task::class);
     }
 }

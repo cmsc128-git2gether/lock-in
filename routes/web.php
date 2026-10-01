@@ -9,9 +9,9 @@ Route::get('/', function () {
 });
 
 //proof of concept: login/ register/log out
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -23,8 +23,9 @@ Route::middleware('auth')->group(function () {
 //----------- TASK ROUTES -------------
 // create tasks
 //change for homepage to have explicit route name
-Route::get('/', [TaskController::class, 'index']
-    )->name('dashboard') ->middleware(['auth']);
+
+
+Route::get('/home', [TaskController::class, 'index'])->name('dashboard')->middleware('auth');
     
 Route::post('/tasks', [TaskController::class, 'store']);
 Route::patch('/tasks/{id}', [TaskController::class, 'update']);
