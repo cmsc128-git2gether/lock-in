@@ -8,17 +8,22 @@
 <body>
     <div class="page-container">
         <div class="header">
-            <h1>My Todos</h1>
+        <a href="{{ route('dashboard') }}" class="header-logo">My Todos</a>
 
-            <div class="user-info">
-                <span>Hello, {{ Auth::user()->name }}</span>
+        <nav class="header-nav">
+            <a href="{{ route('dashboard') }}" class="nav-link">Home</a>
+            <a href="{{ route('profile.edit') }}" class="nav-link">Profile</a>
+        </nav>
 
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit">Log Out</button>
-                </form>
-            </div>
+        <div class="user-info">
+            <span class="user-name">Hello, {{ Auth::user()->name }}!</span>
+
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="logout-btn">Log Out</button>
+            </form>
         </div>
+    </div>
 
         <div class="main-content">
             @if ($errors->any())

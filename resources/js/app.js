@@ -129,6 +129,9 @@ document.addEventListener('click', () => {
 });
 
 
+
+window.togglePassword = togglePassword;
+
 const priorityWeight = {
     High: 3,
     Medium: 2,
@@ -222,7 +225,17 @@ function togglePopup() {
     overlay.classList.toggle('active');
 }
 
-
+//toggle password vis
+function togglePassword(inputId, button) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        button.textContent = 'Hide';
+    } else {
+        input.type = 'password';
+        button.textContent = 'Show';
+    }
+}
 
 
 
