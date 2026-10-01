@@ -7,7 +7,7 @@ Laravel splits backend logic across two folders (`routes` and `app`).
 - `app/` Controllers, Models (business/CRUD logic)
 - `routes/` Route definitions (API/web endpoints)
 - `resources/` Frontend views (Blade templates), CSS, JS
-- `database/` Migrations and seeders
+- `database/` Migrations, seeders, and factories
 
 ## Tech Stack
 
@@ -26,6 +26,16 @@ Laravel splits backend logic across two folders (`routes` and `app`).
 - Composer
 - Node.js & npm
 - MySQL (or another supported DB)
+- mailtrap
+
+### Mailtrap Setup
+1. **Create an account using email**\
+   Register account [here](https://mailtrap.io/).
+
+2. **Look for your sandbox credentials**\
+   Get your username and password, save it for your mailtrap configuration later on. This will serve as your inbox for email verification and password reset requests.
+
+
 
 ### Setup Steps
 
@@ -50,7 +60,7 @@ Laravel splits backend logic across two folders (`routes` and `app`).
    php artisan key:generate
    ```
 
-5. **Configure your database**\
+5. **Configure your database and mailer**\
    Open `.env` and set:
    ```env
    DB_CONNECTION=mysql
@@ -59,6 +69,17 @@ Laravel splits backend logic across two folders (`routes` and `app`).
    DB_DATABASE=toDo
    DB_USERNAME=root
    DB_PASSWORD=
+
+   /* blocks of code */
+
+   MAIL_MAILER=smtp
+   MAIL_HOST=sandbox.smtp.mailtrap.io
+   MAIL_PORT=587
+   MAIL_USERNAME=<you_username>
+   MAIL_PASSWORD=<your_password>
+   MAIL_ENCRYPTION=tls
+   MAIL_FROM_ADDRESS="hello@demomailtrap.co"
+   MAIL_FROM_NAME="${APP_NAME}"
    ```
    Make sure the database itself exists (create it manually in MySQL if needed).
 
@@ -66,7 +87,7 @@ Laravel splits backend logic across two folders (`routes` and `app`).
    ```
    php artisan migrate --seed
    ```
-   This creates the `tasks` and `tags` tables, and seeds a few predefined tags (School, Personal, Others).
+   This creates the `users`, `tags`, and `tasks` tables, and seeds a few predefined tags (School, Personal, Others).
 
 7. **Build frontend assets**
    ```
@@ -81,20 +102,49 @@ Laravel splits backend logic across two folders (`routes` and `app`).
 9. **Open the App** \
    Ctrl+Click on the local host url to access the app.
 
+10. **Create your Account** \
+   Register and verify your email using [mailtrap](https://mailtrap.io/)
 
 
 ## Data Operations (Routes)
 
-Routes are used directly by Blade forms and JavaScript `fetch` calls within the app itself. All routes are defined in `routes/web.php`.
+Routes are used directly by Blade forms and JavaScript `fetch` calls within the app itself. 
+
+Tasks and Profile routes are defined in `routes/web.php`.
 
 | Method | Endpoint | Controller Method | Description |
 |---|---|---|---|
-| `GET` | `/` | `TaskController@index` | Loads the task list, tags, and priority options for the main page. |
+| `GET` | `/home` | `TaskController@index` | Loads the task list, tags, and priority options for the main page. |
 | `POST` | `/tasks` | `TaskController@store` | Creates a new task (title, due date, priority, tag). Used by the "Add New Task" popup. |
 | `PATCH` | `/tasks/{id}` | `TaskController@update` | Changes bool value of a task's `is_done` status. Toggled by checkbox. |
 | `PATCH` | `/tasks/{id}/submit` | `TaskController@submit` | Saves edits to an existing task (title, due date, priority, tag) from the Edit popup. |
 | `DELETE` | `/tasks/{id}/destroy` | `TaskController@destroy` | Soft-deletes a task (sets `deleted_at`). Triggered via `fetch` from the Delete button; the row hides immediately and shows an "Undo" toast. |
 | `PATCH` | `/tasks/{id}/restore` | `TaskController@restore` | Restores a soft-deleted task (clears `deleted_at`). Triggered via `fetch` when "Undo" is clicked within the toast window. |
+| `GET` | `/profile` | `ProfileController@edit` | Enables profile editing. |
+| `PATCH` | `/profile` | `ProfileController@update` | Saves the edit of the user profile. |
+| `DELETE` | `/profile` | `ProfileController@destroy` | Deletes the user profile and information. |
+
+\
+Authentication routes are defined in `routes/auth.php`.
+
+| Method | Endpoint | Controller Method | Description |
+|---|---|---|---|
+| `GET` | `/register` | `RegisteredUserController@create` | Shows registration page. |
+| `POST` | `/register` | `RegisteredUserController@store` | Enables the form submission for registration. Validates the user input for auth. Creates the profile of the newly registered user. |
+| `GET` | `/login` | `AuthenticatedSessionController@create` | Shows login page. |
+| `POST` | `/login` | `AuthenticatedSessionController@store` | Handles the login form submission, checking the existing account of the user to the database. Starts the session of the user in using the web app. |
+| `GET` | `/forget-password` | `PasswordResetLinkController@create` | Shows the  page where the user can enter their email to get a reset password link. |
+| `POST` | `/forget-password` | `PasswordResetLinkController@store` | Gets the reset password request of the user and submits it to the system. Sends the email to the user requesting for a password reset. |
+| `GET` | `/reset-password/{token}` | `NewPasswordController@create` | Shows password reset form page where the user can enter a new password. This link is from the password reset email. |
+| `POST` | `/reset-password/{token}` | `NewPasswordController@store` | Stores the new password of the user and logs the user again. |
+| `GET` | `/verify-email` | `EmailVerificationPromptController` | Prompts the notice to the user for email verification sent in their emails. |
+| `GET` | `/verify-email/{id}/{hash}` | `VerifyEmailController` | Page linked from the verification email. |
+| `POST` | `/email/verification-notification` | `EmailVerificationNotificationController@store` | Enables the resend verification email for a fresh link. |
+| `GET` | `/confirm-password` | `ConfirmablePasswordController@show` | Shows the page for user's password confirmation. |
+| `POST` | `/confirm-password` | `ConfirmablePasswordController@store` | Allows the re-entering of password of the user and checks if it matches. |
+| `PUT` | `/password` | `PasswordController@update` | Enables changes for users to change their password if the user requested. |
+| `POST` | `/logout` | `AuthenticatedSessionController@destroy` | Ends the session of the user. |
+
 
 ### Example: Creating a task (`POST /tasks`)
 
@@ -104,6 +154,7 @@ title=Finish CMSC 130 lab
 due_at=2026-09-15T23:59
 priority=High
 tag_id=1
+user_id=1
 ```
 
 Response: \
