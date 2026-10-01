@@ -23,19 +23,18 @@ Route::middleware('auth')->group(function () {
 //----------- TASK ROUTES -------------
 // create tasks
 //change for homepage to have explicit route name
+//added middleware to all routes
 
 
-Route::get('/home', [TaskController::class, 'index'])->name('dashboard')->middleware('auth');
-    
-Route::post('/tasks', [TaskController::class, 'store']);
-Route::patch('/tasks/{id}', [TaskController::class, 'update']);
+Route::middleware('auth')->group(function () {
+    Route::get('/home', [TaskController::class, 'index'])->name('dashboard');
 
-// edit tasks
-Route::get('/tasks/{id}/edit', [TaskController::class, 'edit']);
-Route::patch('/tasks/{id}/submit', [TaskController::class, 'submit']);
-
-// delete task
-Route::delete('/tasks/{id}/destroy', [TaskController::class, 'destroy']);
-Route::patch('/tasks/{id}/restore', [TaskController::class, 'restore']);
+    Route::post('/tasks', [TaskController::class, 'store']);
+    Route::patch('/tasks/{id}', [TaskController::class, 'update']);
+    Route::get('/tasks/{id}/edit', [TaskController::class, 'edit']);
+    Route::patch('/tasks/{id}/submit', [TaskController::class, 'submit']);
+    Route::delete('/tasks/{id}/destroy', [TaskController::class, 'destroy']);
+    Route::patch('/tasks/{id}/restore', [TaskController::class, 'restore']);
+});
 
 require __DIR__.'/auth.php';
