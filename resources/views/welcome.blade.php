@@ -6,9 +6,9 @@
     <title>My Todos</title>
     @vite(['resources/css/app.css'])
 </head>
-<body class="welcome-body">
+<body class="welcome-body auth-body">
     <div class="welcome-card">
-        <h1 class="welcome-title">Lock the fuck in</h1>
+        <h1 class="welcome-title">Let's Lock In</h1>
         <p class="welcome-subtitle">JUST DO IT.</p>
 
         <div class="welcome-actions">

@@ -6,7 +6,7 @@
     <title>Todo App</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="auth-body">
+<body {{ $attributes->merge(['class' => 'auth-body']) }}>
     <div class="auth-wrapper">
         <div class="auth-card">
             <h1 class="auth-logo">My Todos</h1>

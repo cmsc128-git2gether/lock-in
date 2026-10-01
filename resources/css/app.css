@@ -10,6 +10,28 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
+/*------- background ------*/
+body.auth-body {
+    position: relative;
+    min-height: 100vh;
+    background: none;
+}
+
+body.auth-body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+        url('../images/pretty_forest.jpg') center / cover no-repeat;
+    filter: blur(8px);
+    transform: scale(1.1);
+    z-index: -1;
+}
+
+body.default-bg {
+    background-color:#E6EAED;
+}
 
 /*-------- header --------*/
 .header {
@@ -82,6 +104,10 @@
 
 input[type="checkbox"]:checked + label {
     text-decoration: line-through;
+}
+
+.profile-link {
+    text-decoration: underline;
 }
 
 /* ---------- layout ---------- */
@@ -213,7 +239,7 @@ input[type="checkbox"]:checked + label {
     color: #64748b;
 }
 
-/* ---------- header ---------- */
+/* ---------- tasks  ---------- */
 .task-flex {
     display: flex;
     flex-direction: column;
@@ -837,5 +863,11 @@ input[type="checkbox"]:checked + label {
 }
 
 .password-toggle:hover {
+    text-decoration: underline;
+}
+
+
+/* ------ misc ------*/
+.back-link {
     text-decoration: underline;
 }

@@ -6,7 +6,7 @@ use App\Http\Controllers\TaskController;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->middleware('guest');
 
 //proof of concept: login/ register/log out
 // Route::get('/dashboard', function () {

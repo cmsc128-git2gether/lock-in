@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout class="login-bg">
     @if (session('status'))
         <div class="auth-status">{{ session('status') }}</div>
     @endif
@@ -25,10 +25,6 @@
         </div>
 
         <div class="auth-checkbox-row">
-            <label>
-                <input type="checkbox" name="remember">
-                Remember me
-            </label>
 
             @if (Route::has('password.request'))
                 <a href="{{ route('password.request') }}">Forgot password?</a>
