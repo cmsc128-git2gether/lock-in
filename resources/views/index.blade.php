@@ -9,6 +9,15 @@
     <div class="page-container">
         <div class="header">
             <h1>My Todos</h1>
+
+            <div class="user-info">
+                <span>Hello, {{ Auth::user()->name }}</span>
+
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit">Log Out</button>
+                </form>
+            </div>
         </div>
 
         <div class="main-content">
