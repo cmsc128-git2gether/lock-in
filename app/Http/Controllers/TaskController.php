@@ -11,7 +11,8 @@ use App\Models\Tag;
 class TaskController extends Controller
 {
     public function index(){
-        $tasks = Task::orderBy('is_done', 'asc')
+        $tasks = Task::where('user_id', auth()->id())
+            ->orderBy('is_done', 'asc')
             ->orderBy('due_at', 'asc')
             ->get();
         
@@ -22,14 +23,15 @@ class TaskController extends Controller
 
     public function store(Request $request)
     {
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'due_at'   => 'nullable|date',
             'priority' => 'required|in:High,Medium,Low,Unlabeled',
-            'tag_id'  =>   'required|exists:tags,id', //halp TT
+            'tag_id'  =>   'required|exists:tags,id',
         ]); //valid title check
 
-        Task::create($validated);
+        Task::create($validated + ['user_id' => auth()->id()]) ;
 
         return redirect('/');
     }
