@@ -171,8 +171,14 @@ user_id=1
 Response: \
 redirects back to `/` with the new task visible in the list.
 
-## Screenshots of the App
-<img src="https://i.ibb.co/DPxqt9Kn/Screenshot-2026-09-09-at-23-26-38-Todo-App.png" alt="Screenshot-2026-09-09-at-23-26-38-Todo-App" border="0">
-<a href="https://ibb.co/zWq2yVSH"><img src="https://i.ibb.co/9mQ4FHq3/Screenshot-2026-09-09-at-23-30-08-Todo-App.png" alt="Screenshot-2026-09-09-at-23-30-08-Todo-App" border="0"></a>
-<a href="https://ibb.co/20tjnN02"><img src="https://i.ibb.co/9mTq8tmX/Screenshot-2026-09-09-at-23-30-38-Todo-App.png" alt="Screenshot-2026-09-09-at-23-30-38-Todo-App" border="0"></a>
+## Authentication: Sessions and Password Recovery
 
+This app uses Laravel's built-in session authentication (Laravel Breeze).
+
+### Sessions
+
+Because HTTP is stateless, the app uses server-side sessions to remember who is logged in.
+
+1. Upon login success,  session ID is regenerated to prevent session fixation, and the user's ID is stored in the session.
+3. The browser keeps only an encrypted session cookie. On each request, Laravel uses it to load the current user.
+4. On logout (`POST /logout`), the session is invalidated and the CSRF token is regenerated.
