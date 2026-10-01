@@ -1,6 +1,16 @@
 # Lock In (Working Title)
+## Application Description
+A simple todo list app with task priorities, tags, soft-deletes with undo, and column-based filtering and sorting. Made with Laravel and love <3.
 
-A simple todo list app with task priorities, tags, soft-delete with undo, and column-based filtering and sorting. Made with Laravel and love <3.
+## Features
+* __User Creation__ - allows users to create profile and use the application.
+* __Adding New Task__ - enables user to make a new to-do task by entering the title, due date, priority, and tag.
+* __Editing Task__ - provides a edit form for the users to update changes on their tasks.
+* __Deleting Task__ - deletes tasks of the user.
+* __Undo Option__ - appears after deletion of tasks if the user changed their mind to delete their task.
+* __Sort and Filter__ - sorts and filters by due date, date added, priority and tags.
+* __Password Reset__ - send password reset emails for user who requested.
+* __Profile Page Management__ - allows user to update user profile.
 
 ## Project Structure
 Laravel splits backend logic across two folders (`routes` and `app`).
@@ -16,6 +26,7 @@ Laravel splits backend logic across two folders (`routes` and `app`).
 | Backend framework | **Laravel** (PHP) | Built-in routing, Eloquent ORM, and migrations make CRUD + relationships  fast to set up without manually coding SQL. |
 | Database | **MySQL** | Relational structure fits the data well. Tasks belong to tags via a foreign key (`tag_id`), and Eloquent's relationship methods (`belongsTo`/`hasMany`) can easily map between models. |
 | Frontend | **Blade templates**| Blade keeps the view layer in PHP alongside the backend (no separate frontend framework/build step for components. |
+| Authentication approach | **Breeze** | Implements Laravel's authentication methods, such as login, register, password reset, emil verification, and email information. |
 | Asset bundling | **Vite** | Laravel's default asset bundler. Compiles and hot-reloads CSS/JS during development (`npm run dev`). |
 
 
