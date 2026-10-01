@@ -33,14 +33,14 @@ class TaskController extends Controller
 
         Task::create($validated + ['user_id' => auth()->id()]) ;
 
-        return redirect('/');
+        return redirect('/home');
     }
 
     public function update(Request $request, $id){
         $task = Task::findOrFail($id);
         $task->update(['is_done' => $request->input('is_done')]);
 
-        return redirect('/');
+        return redirect('/home');
     }
 
     // edit
@@ -65,7 +65,7 @@ class TaskController extends Controller
 
         $task->update($validated);
 
-        return redirect('/');
+        return redirect('/home');
     }
 
     // delete
