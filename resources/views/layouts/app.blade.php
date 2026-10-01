@@ -1,3 +1,4 @@
+<!-- resources/views/layouts/app.blade.php -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,9 +8,7 @@
     <title>My Todos</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="page-container">
-    @include('layouts.navigation')
-
+<body {{ $attributes->merge(['class' => 'app-body']) }}>
     <main class="main-content">
         @isset($header)
             <h1 class="page-title">{{ $header }}</h1>

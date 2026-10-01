@@ -1,4 +1,5 @@
-<x-app-layout>
+<x-app-layout class="default-bg">
+    <a href="{{ route('dashboard') }}" class="back-link">← Back to Todos</a>
     <div class="profile-card">
         <h2>Profile Information</h2>
         <p class="profile-desc">Update your name and email address.</p>

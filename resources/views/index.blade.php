@@ -8,11 +8,10 @@
 <body>
     <div class="page-container">
         <div class="header">
-        <a href="{{ route('dashboard') }}" class="header-logo">My Todos</a>
+        <p><strong>My Todos</strong></p>
 
         <nav class="header-nav">
-            <a href="{{ route('dashboard') }}" class="nav-link">Home</a>
-            <a href="{{ route('profile.edit') }}" class="nav-link">Profile</a>
+            <a href="{{ route('profile.edit') }}" class="profile-link">Profile</a>
         </nav>
 
         <div class="user-info">
