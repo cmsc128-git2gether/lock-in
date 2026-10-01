@@ -11,7 +11,10 @@ use App\Models\Tag;
 class TaskController extends Controller
 {
     public function index(){
-        $tasks = Task::all();
+        $tasks = Task::orderBy('is_done', 'asc')
+            ->orderBy('due_at', 'asc')
+            ->get();
+        
         $tags = Tag::all();
         $priorities = Task:: priorities;
             return view('index', ['tasks' => $tasks, 'tags' => $tags, 'priorities' => $priorities]);

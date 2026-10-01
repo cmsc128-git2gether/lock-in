@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -17,10 +17,17 @@
     display: flex;
     flex-flow: row wrap;
     gap: 1rem;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
     margin-block-end: 1.5rem;
     padding-block: 1rem;
+    padding-inline: 1rem;
 
+}
+
+.header button{
+    color:rgb(130, 130, 158);
+    text-decoration:underline;
 }
 
 #table-tasks th, td {
@@ -466,4 +473,9 @@ input[type="checkbox"]:checked + label {
 #sortSelect:focus {
     border-color: #1e5f6e;
     box-shadow: 0 0 0 3px rgba(30, 95, 110, 0.15);
+}
+
+/* misc */
+button {
+    cursor: pointer;
 }
