@@ -1,8 +1,9 @@
 <?php
 
 namespace Database\Factories;
-
+use App\Models\User;
 use App\Models\Task;
+use App\Models\Tag;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,9 +18,8 @@ class TaskFactory extends Factory
      */
     public function definition(): array
     {
-        // $user_id = User::get()->id;
         return [
-            // s'user_id' => $user_id,
+            'user_id' => User::factory(),
             'tag_id' => Tag::inRandomOrder()->value('id'),
             'title' => fake()->sentence(4),
             'priority' => fake()->randomElement(Task::priorities),

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Todo App</title>
+    <title>Lock In Dashboard</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/css/app.css','resources/js/app.js'])
 </head>
@@ -12,7 +12,9 @@
 
         <nav class="header-nav">
             <a href="{{ route('profile.edit') }}" class="profile-link">Profile</a>
+            <a href="tasks/trash" class="trash-link">Recently Deleted</a>
         </nav>
+        
 
         <div class="user-info">
             <span class="user-name">Hello, {{ Auth::user()->name }}!</span>
