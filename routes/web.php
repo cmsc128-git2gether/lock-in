@@ -40,6 +40,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/tasks/trash', [TaskController::class, 'trash']);
     Route::delete('/tasks/{id}/destroy', [TaskController::class, 'destroy']);
     Route::patch('/tasks/{id}/restore', [TaskController::class, 'restore']);
+    Route::delete('/tasks/{id}/force', [TaskController::class, 'forceDelete']);
 
     Route::post('/tags', [TagController::class, 'store'])->name('tags.store');
 
