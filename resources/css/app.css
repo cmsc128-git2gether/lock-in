@@ -551,6 +551,33 @@ body.default-bg {
     text-align: right;
 }
 
+/* recently deleted format */
+.trash-tasks {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left; 
+}
+
+.trash-tasks thead th {
+    padding: .75rem 1rem;
+    font-size: .7rem;
+    font-weight: 600;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+}
+
+.trash-tasks tbody {
+    border-top: 1px solid #f0f1f3;
+    padding: .85rem 1rem;
+    font-size: .875rem;
+}
+
+.task-actions {
+    margin-top: 20px;
+}
+
+
 .due {
     color: #4b5563;
     white-space: nowrap; }
@@ -1240,3 +1267,34 @@ body.default-bg {
 .back-link {
     text-decoration: underline;
 }
+
+/* recently deleted icon bar */
+.sidebar-trash {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: auto;
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: #6b7280;
+    text-decoration: none;
+    font-size: 14px;
+}
+.sidebar-trash:hover { background: #f1f5f9; color: #132224; }
+.sidebar-trash.is-active { background: #1f5f66; color: #fff; }
+.sidebar-count {
+    margin-left: auto;
+    font-size: 9px;
+    background: #e5e7eb;
+    border-radius: 999px;
+    padding: 0 8px;
+}
+
+.trash-card {
+    margin-bottom:10px;
+}
+
+.sidebard {
+    margin-left: 20px;
+}
+

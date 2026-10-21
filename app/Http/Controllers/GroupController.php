@@ -20,12 +20,52 @@ class GroupController extends Controller
     }
 
     // create group
-    public function store(Request $request) {
-        $info = $request->validate(['name' => 'required|string|max:255']);
+    // public function store(Request $request) {
+    //     $info = $request->validate(['name' => 'required|string|max:255']);
 
-        $group = DB::transaction(function () use ($info, $request) {
-            $group = Group::create(['name' => $info['name'], 'owner_id' => $request->user()->id]);
+    //     $group = DB::transaction(function () use ($info, $request) {
+    //         $group = Group::create(['name' => $info['name'], 'owner_id' => $request->user()->id]);
+    //         $group->members()->attach($request->user()->id, ['role' => 'owner']);
+
+    //         return $group;
+    //     });
+
+    //     return redirect()->route('groups.show', $group);
+    // }
+
+    public function store(Request $request) 
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'emails' => 'nullable|array',
+            'emails.*' => 'email|exists:users,email' // registered user
+        ]);
+
+        $group = DB::transaction(function () use ($validated, $request) {
+            // create
+            $group = Group::create([
+                'name' => $validated['name'], 
+                'owner_id' => $request->user()->id
+            ]);
+
+            // owner
             $group->members()->attach($request->user()->id, ['role' => 'owner']);
+
+            // member
+            if (!empty($validated['emails'])) {
+                $userIds = \App\Models\User::whereIn('email', $validated['emails'])->pluck('id');
+                
+                // member emails array
+                $memberData = [];
+                foreach ($userIds as $userId) {
+                    if ($userId !== $request->user()->id) {
+                        $memberData[$userId] = ['role' => 'member'];
+                    }
+                }
+                if (!empty($memberData)) {
+                    $group->members()->attach($memberData);
+                }
+            }
 
             return $group;
         });
@@ -61,6 +101,6 @@ class GroupController extends Controller
 
         $group->delete();
 
-        return redirect()->route('groups.index');
+        return redirect()->route('groups.show');
     }
 }

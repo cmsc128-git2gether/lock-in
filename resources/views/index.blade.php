@@ -25,7 +25,8 @@
 
         <div class="sidebar-heading-row">
             <p class="sidebar-heading">Lists</p>
-            <button type="button" class="sidebar-add" aria-label="New list">
+            <button type="button" class="sidebar-add" aria-label="New list"
+                    onclick="document.getElementById('group-form-popup').showModal()">
                 @svg('heroicon-o-plus', 'w-3.5 h-3.5')
             </button>
         </div>
@@ -33,10 +34,16 @@
         <details class="sidebar-group" open>
             <summary>
                 @svg('heroicon-o-chevron-down', 'w-3 h-3 chevron')
-                My lists
+                My group lists
             </summary>
             {{-- later: @foreach over lists you own --}}
-            <a href="#" class="sidebar-item sub">MY Group List</a>
+            @forelse ($ownedGroups ?? [] as $group)
+            <a href="{{ route('groups.show', $group) }}" class="sidebar-item sub {{ request()->routeIs('groups.show') && request()->group->id === $group->id ? 'is-active' : ''}}">
+                {{ $group->name }}
+            </a>
+            @empty
+                <span class="sidebar-item sub muted" style="padding-left: 24px; font-size: 0.85rem;">No owned groups yet</span>
+            @endforelse
         </details>
 
         <details class="sidebar-group" open>
@@ -45,13 +52,31 @@
                 Shared with me
             </summary>
             {{-- later: @foreach over lists you were added to --}}
-            <a href="#" class="sidebar-item sub">
-                Bee Group List
-                <small class="sidebar-owner">by Bee</small>
+            @forelse ($sharedGroups ?? [] as $group)
+            <a href="{{ route('groups.show', $group) }}" 
+            class="sidebar-item sub {{ request()->routeIs('groups.show') && request()->route('group')->id === $group->id ? 'is-active' : '' }}">
+                {{ $group->name }}
+                <small class="sidebar-owner">by {{ $group->owner->name ?? 'Unknown' }}</small>
             </a>
+            @empty
+                <span class="sidebar-item sub muted" style="padding-left: 24px; font-size: 0.85rem;">No shared groups yet</span>
+            @endforelse
         </details>
 
         <div class="sidebar-bottom">
+            <div class="trash-card">
+            @php
+                $trashCount = \App\Models\Task::onlyTrashed()->where('user_id', auth()->id())->count();
+            @endphp
+                <a href="{{ url('/tasks/trash') }}"
+                    class="sidebar-link sidebar-trash {{ request()->is('tasks/trash') ? 'is-active' : '' }}">
+                    @svg('heroicon-o-trash', 'w-4 h-4')
+                    <span>Recently Deleted</span>
+                    @if ($trashCount > 0)
+                        <span class="sidebar-count">{{ $trashCount }}</span>
+                    @endif
+                </a>
+            </div>
             <div class="user-card">
                 <span class="avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
                 <div class="user-card-text">
@@ -275,6 +300,27 @@
     @endforeach
     <div id="notif-container"></div>
     </div>
+
+    {{-- new list popup --}}
+    <dialog id="group-form-popup" class="popup-modal">
+        <button type="button" class="close-form" onclick="this.closest('dialog').close()">X</button>
+        <h2>New list</h2>
+        <form method="POST" action="{{ route('groups.store') }}" class="popup-form">
+            @csrf
+            <label for="group-name">List name</label>
+            <input type="text" id="group-name" name="name" maxlength="255" required>
+
+            <label>Members (optional)</label>
+            <div id="email-inputs-container" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+                <div style="display: flex; gap: 8px;">
+                    <input type="email" name="emails[]" placeholder="teammate@example.com" style="flex: 1;">
+                    <button type="button" class="btn btn-outline" onclick="addEmailField()">Add</button>
+                </div>
+            </div>
+
+            <button type="submit">Create</button>
+        </form>
+    </dialog>
 
 @include('components.add-tag-modal')
 @include('components.add-task-modal')
