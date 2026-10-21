@@ -12,9 +12,9 @@
             <input id="update_password_current_password" type="password" name="current_password" autocomplete="current-password">
             <button type="button" class="password-toggle" onclick="togglePassword('update_password_current_password', this)">Show</button>
         </div>
-        @error('password', 'updatePassword')
+        @foreach ($errors->updatePassword->get('current_password') as $message)
             <div class="auth-error">{{ $message }}</div>
-        @enderror
+        @endforeach
     </div>
 
     <div class="profile-field">
@@ -23,9 +23,9 @@
             <input id="update_password_password" type="password" name="password" autocomplete="new-password">
             <button type="button" class="password-toggle" onclick="togglePassword('update_password_password', this)">Show</button>
         </div>
-        @error('password', 'updatePassword')
+        @foreach ($errors->updatePassword->get('password') as $message)
             <div class="auth-error">{{ $message }}</div>
-        @enderror
+        @endforeach
     </div>
 
     <div class="profile-field">
@@ -34,6 +34,9 @@
             <input id="update_password_password_confirmation" type="password" name="password_confirmation" autocomplete="new-password">
             <button type="button" class="password-toggle" onclick="togglePassword('update_password_password_confirmation', this)">Show</button>
         </div>
+        @foreach ($errors->updatePassword->get('password_confirmation') as $message)
+            <div class="auth-error">{{ $message }}</div>
+        @endforeach
     </div>
 
     <button type="submit" class="profile-save-btn">Save</button>

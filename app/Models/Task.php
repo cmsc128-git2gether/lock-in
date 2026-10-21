@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Prunable;
 
 class Task extends Model
 {
     /** @use HasFactory<\Database\Factories\TaskFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Prunable;
     
     public const priorities = ['Unlabeled', 'Low', 'Medium', 'High'];
 
@@ -34,5 +35,13 @@ class Task extends Model
 
     public function tag() {
         return $this->belongsTo(Tag::class);
+    }
+
+    public function prunable() {
+        return static::onlyTrashed()->where('deleted_at', '<=', now()->subDays(30));
+    }
+
+    public function groups() {
+        return $this->belongsToMany(Group::class, 'group_tasks')->withTimestamps();
     }
 }

@@ -1,5 +1,23 @@
 import './bootstrap';
 
+function updateTaskCount() {
+    const rows = [...document.querySelectorAll('#table-tasks tbody tr')].filter(r => !r.dataset.deleted);
+    const active = rows.filter(r => r.dataset.status === 'active');
+    const done = rows.length - active.length;
+    const overdue = active.filter(r => r.dataset.overdue === '1').length;
+
+    const set = (id, n) => { const el = document.getElementById(id); if (el) el.textContent = n; };
+    set('task-count', active.length);
+    set('stat-active', active.length);
+    set('stat-done', done);
+    set('stat-overdue', overdue);
+    document.getElementById('stat-overdue-box')?.classList.toggle('stat-alert', overdue > 0);
+
+    const label = document.querySelector('.switch-text');
+    if (label) label.textContent = `Show completed (${done})`;
+}
+
+
 function toggle(event) {
     event.stopPropagation();
     const currMenu = event.currentTarget.nextElementSibling;
@@ -11,7 +29,6 @@ function toggle(event) {
     currMenu.classList.toggle('show');
 }
 
-window.toggle = toggle;
 
 document.addEventListener('click', () => {
     document.querySelectorAll('.dropdown-choices').forEach(menu => {
@@ -26,6 +43,8 @@ function handleDelete(button){
     const row = button.closest('tr');
 
     row.style.display = 'none';
+    row.dataset.deleted = '1';
+    updateTaskCount();
 
     fetch(`/tasks/${taskId}/destroy`, {
         method: 'DELETE',
@@ -39,6 +58,8 @@ function handleDelete(button){
     })
     .catch(() => {
         row.style.display = ''; // restore row if delete failed
+        delete row.dataset.deleted;
+        updateTaskCount();
         alert('Something went wrong deleting that task.');
     });
 
@@ -67,6 +88,7 @@ function showUndo(taskId, taskTitle, row){
     const timeout = setTimeout(() => {
         notif.remove();
         row.remove();
+        updateTaskCount();
     }, duration);
 
 
@@ -90,6 +112,8 @@ function restoreTask(taskId, row, notif) {
     .then(response => {
         if (!response.ok) throw new Error('Restore failed');
         row.style.display = '';
+        delete row.dataset.deleted;
+        updateTaskCount();
         notif.remove();
     })
     .catch(() => {
@@ -98,7 +122,7 @@ function restoreTask(taskId, row, notif) {
 }
 
 //filter feature
-const activeFilters = { priority: '', tag: '', status: '' };
+const activeFilters = { priority: '', tag: '', status: 'active' };
 
 function toggleColFilter(event) {
     event.stopPropagation();
@@ -106,7 +130,7 @@ function toggleColFilter(event) {
     document.querySelectorAll('.th-filter-choices.show, .dropdown-choices.show').forEach(e => {
         if (e !== panel) e.classList.remove('show');
     });
-    panel.classList.toggle('show');
+    if (panel) panel.classList.toggle('show');
 }
 
 function filterByColumn(column, value) {
@@ -130,7 +154,6 @@ document.addEventListener('click', () => {
 
 
 
-window.togglePassword = togglePassword;
 
 const priorityWeight = {
     High: 3,
@@ -186,7 +209,7 @@ function sortTable(key) {
 
 }
  
-// groupings
+// groupings for tasks
 function applyGrouping() {
     const tbody = document.querySelector('#table-tasks tbody');
     if (!tbody) return;
@@ -220,6 +243,7 @@ document.getElementById('groupByTag')?.addEventListener('change', function () {
         document.querySelectorAll('.group-header-row').forEach(el => el.remove());
     }
 });
+
 function togglePopup() {
     const overlay = document.getElementById('popupOverlay');
     overlay.classList.toggle('active');
@@ -237,10 +261,55 @@ function togglePassword(inputId, button) {
     }
 }
 
+function addEmailField() {
+    const container = document.getElementById('email-inputs-container');
+    const wrapper = document.createElement('div');
+    wrapper.style.display = 'flex';
+    wrapper.style.gap = '8px';
+    wrapper.innerHTML = `
+        <input type="email" name="emails[]" placeholder="teammate@example.com" style="flex: 1;">
+        <button type="button" class="btn btn-outline" onclick="this.parentElement.remove()">Remove</button>
+    `;
+    container.appendChild(wrapper);
+}
+
+//grid selector for custom tags:
+document.querySelectorAll('.icon-grid input[type="radio"]').forEach(radio => {
+        if(radio.checked) {
+            radio.nextElementSibling.style.borderColor = '#3b82f6';
+            radio.nextElementSibling.style.background = '#eff6ff';
+        }
+
+        radio.addEventListener('change', function() {
+            document.querySelectorAll('.icon-choice-box').forEach(box => {
+                box.style.borderColor = '#e2e8f0';
+                box.style.background = '#fff';
+            });
+            if(this.checked) {
+                this.nextElementSibling.style.borderColor = '#3b82f6';
+                this.nextElementSibling.style.background = '#eff6ff';
+            }
+        });
+    });
+
+//global Document Event Listeners
+document.addEventListener('click', () => {
+    document.querySelectorAll('.th-filter-choices.show, .dropdown-choices.show').forEach(e => e.classList.remove('show'));
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const showDone = document.getElementById('showDone');
+    if (showDone) activeFilters.status = showDone.checked ? '' : 'active';
+    applyFilters();
+});
 
 
+window.updateTaskCount = updateTaskCount;
+window.toggle = toggle;
 window.toggleColFilter = toggleColFilter;
 window.filterByColumn = filterByColumn;
 window.handleDelete = handleDelete;
 window.restoreTask = restoreTask;
 window.sortTable = sortTable;
+window.togglePassword = togglePassword;
+window.addEmailField = addEmailField;
