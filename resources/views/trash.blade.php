@@ -6,6 +6,10 @@
     <title>Recently Deleted</title>
 </head>
 <body>
+
+    <nav class="header-nav">
+        <a href="{{ route('dashboard') }}" class="back-link">← Back to Todos</a>
+    </nav>
     <h1>Recently Deleted</h1>
 
     @forelse ($tasks as $task)
