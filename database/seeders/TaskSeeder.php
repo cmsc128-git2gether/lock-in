@@ -15,22 +15,24 @@ class TaskSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::factory();
-
-        Task::factory()
-            ->count(5)
-            ->for($user)
-            ->create();
-
-        Task::factory()
-            ->count(3)
-            ->for($user)
-            ->create();
+        $users = User::all();
         
-        Task::factory()
-            ->count(8)
-            ->for($user)
-            ->create();
+        foreach ($users as $user) {
+            Task::factory()
+                ->count(2)
+                ->for($user)
+                ->create();
+
+            Task::factory()
+                ->count(3)
+                ->for($user)
+                ->create(['is_done' => true]);
+            
+            Task::factory()
+                ->count(2)
+                ->for($user)
+                ->trashed()->create();
+        }
 
     }
 }

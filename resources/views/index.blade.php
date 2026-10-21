@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Todo App</title>
+    <title>Lock In Dashboard</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/css/app.css','resources/js/app.js'])
 </head>
@@ -21,6 +21,7 @@
                 <span>Personal</span>
             </a>
         </nav>
+        
 
         <div class="sidebar-heading-row">
             <p class="sidebar-heading">Lists</p>
