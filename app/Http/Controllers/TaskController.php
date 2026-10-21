@@ -27,6 +27,7 @@ class TaskController extends Controller
     public function index(){
         $tasks = Task::with('tag')
             ->where('user_id', auth()->id())
+            ->whereDoesntHave('groups')
             ->orderBy('is_done', 'asc')
             ->orderBy('due_at', 'asc')
             ->orderByRaw('due_at IS NULL')

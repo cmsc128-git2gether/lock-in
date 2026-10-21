@@ -40,4 +40,8 @@ class Task extends Model
     public function prunable() {
         return static::onlyTrashed()->where('deleted_at', '<=', now()->subDays(30));
     }
+
+    public function groups() {
+        return $this->belongsToMany(Group::class, 'group_tasks')->withTimestamps();
+    }
 }
