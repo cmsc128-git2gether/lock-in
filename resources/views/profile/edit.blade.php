@@ -8,7 +8,7 @@
 
     <div class="profile-card">
         <h2>Update Password</h2>
-        <p class="profile-desc">Use a long, random password to stay secure.</p>
+        <p class="profile-desc">Password must have at least 8 characters, with 1 special character and 1 number.</p>
         @include('profile.partials.update-password-form')
     </div>
 </x-app-layout>

@@ -28,7 +28,7 @@ class TaskController extends Controller
             'title' => 'required|string|max:255',
             'due_at'   => 'nullable|date',
             'priority' => 'required|in:High,Medium,Low,Unlabeled',
-            'tag_id'  =>   'required|exists:tags,id',
+            'tag_id'  =>   'nullable|exists:tags,id',
         ]); //valid title check
 
         Task::create($validated + ['user_id' => auth()->id()]) ;

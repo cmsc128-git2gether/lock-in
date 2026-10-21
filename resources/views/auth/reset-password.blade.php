@@ -7,23 +7,32 @@
         <div class="auth-field">
             <label for="email">Email</label>
             <input id="email" type="email" name="email" value="{{ old('email', $request->email) }}" required autofocus>
-            @error('email')
+            @foreach ($errors->get('email') as $message)
                 <div class="auth-error">{{ $message }}</div>
-            @enderror
+            @endforeach
         </div>
 
         <div class="auth-field">
             <label for="password">New Password</label>
-            <input id="password" type="password" name="password" required>
-            @error('password')
+            <div class="password-field">
+                <input id="password" type="password" name="password" required autocomplete="new-password">
+                <button type="button" class="password-toggle" onclick="togglePassword('password_confirmation', this)">Show</button>
+            </div>
+            <small class="auth-hint">At least 8 characters, 1 number, 1 special character.</small>
+            @foreach ($errors->get('password') as $message)
                 <div class="auth-error">{{ $message }}</div>
-            @enderror
+            @endforeach
         </div>
 
         <div class="auth-field">
-            <label for="password_confirmation">Confirm Password</label>
-            <input id="password_confirmation" type="password" name="password_confirmation" required>
+            <div class="password-field">
+                <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password">
+                <button type="button" class="password-toggle" onclick="togglePassword('password_confirmation', this)">Show</button>
+            </div>
         </div>
+        @foreach ($errors->get('password_confirmation') as $message)
+            <div class="auth-error">{{ $message }}</div>
+        @endforeach
 
         <button type="submit" class="auth-button">Reset password</button>
     </form>
