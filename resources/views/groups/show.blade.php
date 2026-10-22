@@ -82,12 +82,12 @@
                     @endforeach
                 </select>
 
-                <select id="filterTag" class="select" onchange="filterByColumn('tag', this.value)" aria-label="Filter by tag">
-                    <option value="">All tags</option>
-                    @foreach ($tags as $tag)
-                        <option value="{{ $tag->name }}">{{ $tag->name }}</option>
-                    @endforeach
-                </select>
+            <select id="filterTag" class="select" onchange="filterByColumn('tag', this.value)">
+                <option value="">All tags</option>
+                @foreach ($tags as $tag)
+                    <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                @endforeach
+            </select>
                 
                 <select id="sortSelect" class="select" onchange="sortTable(this.value)" aria-label="Sort tasks">
                     <option value="created_at">Sort: Date added</option>
@@ -122,14 +122,13 @@
                         $mine = $task->user_id === auth()->id();
                         $who = $mine ? 'You' : ($task->user->name ?? 'Unknown');
                     @endphp
-                    <tr class="{{ $task->is_done ? 'task-done' : '' }}"
-                        data-overdue="{{ $overdue ? 1 : 0 }}"
-                        data-created="{{ $task->created_at }}"
-                        data-due="{{ $task->due_at }}"
-                        data-priority="{{ $task->priority }}"
-                        data-tag="{{ $task->tag->name ?? '' }}"
-                        data-tag-id="{{ $task->tag_id ?? 0 }}"
-                        data-status="{{ $task->is_done ? 'done' : 'active' }}">
+                        <tr class="{{ $task->is_done ? 'task-done' : '' }}"
+                            data-overdue="{{ $overdue ? 1 : 0 }}"
+                            data-created="{{ $task->created_at }}"
+                            data-due="{{ $task->due_at }}"
+                            data-priority="{{ $task->priority }}"
+                            data-status="{{ $task->is_done ? 'done' : 'active' }}"
+                            data-tag="{{ $task->tag_id ?? 0 }}"> 
                         <td>
                             <form method="POST" action="{{ route('groups.tasks.update', [$group, $task]) }}" class="checkbox-form">
                                 @csrf @method('PATCH')
@@ -247,7 +246,7 @@
         <dialog id="gedit-popup-{{ $task->id }}" class="popup-modal">
             <button type="button" class="close-form" onclick="this.closest('dialog').close()">✕</button>
             <h2>Edit Task</h2>
-            <form action="/tasks/{{ $task->id }}/submit" class="popup-form" method="POST">
+            <form action="{{ route('groups.tasks.update', [$group, $task]) }}" class="popup-form" method="POST">
                 @csrf
                 @method('PATCH')
                 <label for="gtitle-{{ $task->id }}">Task Name</label>
