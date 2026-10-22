@@ -71,7 +71,9 @@
         @if ($tasks->isEmpty())
             <p class="empty-message">No tasks in this list yet.</p>
         @else
+        <h3 class="toolbar-title">Filter and Sort</h3>
             <div class="task-toolbar">
+                
                 {{-- sort --}}
                 <select id="filterPriority" class="select" onchange="filterByColumn('priority', this.value)" aria-label="Filter by priority">
                     <option value="">All priorities</option>
@@ -86,7 +88,7 @@
                         <option value="{{ $tag->name }}">{{ $tag->name }}</option>
                     @endforeach
                 </select>
-
+                
                 <select id="sortSelect" class="select" onchange="sortTable(this.value)" aria-label="Sort tasks">
                     <option value="created_at">Sort: Date added</option>
                     <option value="due_at">Sort: Due date</option>
@@ -97,7 +99,7 @@
                 <label class="switch">
                     <input type="checkbox" id="showDone" onchange="filterByColumn('status', this.checked ? '' : 'active')">
                     <span class="switch-track"></span>
-                    <span class="switch-text">Show completed ({{ $doneCount }})</span>
+                    <span class="switch-text">Show completed</span>
                 </label>
             </div>
             {{-- tasks itself --}}
@@ -197,11 +199,6 @@
     <section class="card task-card">
         <div class="task-head">
             <h2 class="task-title">Members <span class="count-pill">{{ count($members) }}</span></h2>
-            <div class="task-actions">
-                <button type="button" class="btn btn-outline" onclick="document.getElementById('tag-form-popup').showModal()">
-                    @svg('heroicon-o-tag', 'w-4 h-4') New tag
-                </button>
-            </div>
         </div>
 
         <ul class="member-list">

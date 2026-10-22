@@ -292,13 +292,6 @@ document.querySelectorAll('.icon-grid input[type="radio"]').forEach(radio => {
         });
     });
 
-function addEmailField() {
-    const container = document.getElementById('email-inputs-container');
-    const row = document.createElement('div');
-    row.style.cssText = 'display:flex;gap:8px;';
-    row.innerHTML = '<input type="email" name="emails[]" placeholder="teammate@example.com" style="flex:1;">';
-    container.appendChild(row);
-}
 
 //global Document Event Listeners
 document.addEventListener('click', () => {
