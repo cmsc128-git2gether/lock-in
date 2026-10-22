@@ -7,7 +7,8 @@
     <title>@yield('title', 'Lock In')</title>
     @vite(['resources/css/app.css','resources/js/app.js'])
 </head>
-<body>
+<body class="app-bg">
+<div class="app-shell">
     @php
         $currentGroupId = request()->route('group')?->id;
     @endphp
@@ -97,15 +98,15 @@
         </div>
     </aside>
 
-    <main>@yield('content')</main>
+    <main class="main-content">@yield('content')</main>
 
     {{-- new list popup --}}
     <dialog id="group-form-popup" class="popup-modal">
         <button type="button" class="close-form" onclick="this.closest('dialog').close()">X</button>
-        <h2>New list</h2>
+        <h2>Group Lists</h2>
         <form method="POST" action="{{ route('groups.store') }}" class="popup-form">
             @csrf
-            <label for="group-name">List name</label>
+            <label for="group-name">Owned by Me</label>
             <input type="text" id="group-name" name="name" maxlength="255" required>
 
             <label>Members (optional)</label>
