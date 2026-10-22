@@ -24,7 +24,7 @@
         <nav class="sidebar-nav">
             <a href="{{ route('dashboard') }}"
                class="sidebar-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                <span>Personal</span>
+                @svg('heroicon-o-clipboard', 'w-3.5 h-3.5') <span> Personal</span>
             </a>
         </nav>
 
@@ -72,7 +72,7 @@
                 <a href="/tasks/trash"
                    class="sidebar-link sidebar-trash {{ request()->routeIs('tasks.trash') ? 'is-active' : '' }}">
                     @svg('heroicon-o-trash', 'w-4 h-4')
-                    <span>Recently</span>
+                    <span>Recently Deleted</span>
                     @if (($trashCount ?? 0) > 0)
                         <span class="sidebar-count">{{ $trashCount }}</span>
                     @endif
