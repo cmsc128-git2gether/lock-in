@@ -1,13 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Recently Deleted</title>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    @vite(['resources/css/app.css','resources/js/app.js'])
-</head>
-<body class="app-bg">
-<div class="app-shell">
-
     @extends('layouts.sidebar')
 
     @section('title', 'Recently Deleted')
@@ -88,6 +78,3 @@
         </section>
     </div>
     @endsection
-
-</body>
-</html>

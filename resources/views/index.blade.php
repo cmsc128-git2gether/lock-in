@@ -145,9 +145,9 @@
             Active Tasks <span class="count-pill" id="task-count">{{ $tasks->where('is_done', false)->count() }}</span>
         </h2>
         <div class="task-actions">
-            <button type="button" class="btn btn-outline" onclick="document.getElementById('tag-form-popup').showModal()">
+            {{-- <button type="button" class="btn btn-outline" onclick="document.getElementById('tag-form-popup').showModal()">
                 @svg('heroicon-o-tag', 'w-4 h-4') New tag
-            </button>
+            </button> --}}
             <button type="button" class="btn btn-dark" onclick="document.getElementById('form-popup').showModal()">
                 @svg('heroicon-o-plus', 'w-4 h-4') Add task
             </button>
