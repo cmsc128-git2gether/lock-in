@@ -189,3 +189,32 @@ Because HTTP is stateless, the app uses server-side sessions to remember who is 
 1. When the user requests for password recovery, the system loads the reset password (`GET /forgot-password`) page, which requires them to submit their email address.
 2. Then upon submitting the form, it will looking for the user's email, generates a hashed token, and sends a password reset email to the user (`POST /forgot-password`).
 3. User opens the emailed link, validates if it has not expired yet, and user can enter a new password. The system updates the password of the user.
+
+## Your schema: how Users, Tasks, and (if implemented) collaborative lists relate to each other
+
+
+1. tasks
+
+    - Tracks task metadata, deadlines, and operational prioritization.
+    • user_id (unsignedBigInteger, nullable): References the creator (users.id). Cascades on delete.
+    • tag_id (unsignedBigInteger, nullable): References contextual filters (tags.id). Nullifies on delete.
+    • title (string): The textual body of the task.
+    • priority (string): Categorization spectrum (Unlabeled, Low, Medium, High).
+    • due_at (dateTime, nullable): Deadlines and target completion thresholds.
+    • is_done (boolean): State tracking toggle.
+    • deleted_at (softDeletes): Provides an indexable baseline (['user_id', 'deleted_at']) to cleanly run data restorations.
+
+2. group_members
+
+    - A pivot interface bridging users to spaces while scoping operational permissions.
+• group_id & user_id: Foreign keys bound securely using a dual composite index unique(['group_id', 'user_id']).
+• role (string): Default configuration parameters set to member.
+
+3. group_tasks
+
+- An intersection pivot model tracking task allocations across collaborative work lists.
+• group_id & task_id: Foreign keys mapping data states across containers (unique(['group_id', 'task_id'])). Keeps core task records decoupled from lists.
+
+## Example API endpoints or equivalent operations, showing how ownership is checked
+All endpoints verify that a user belongs to a group before making changes. Destructive actions (like editing or deleting) verify that the user is the creator of the task or the owner of the group.
+
