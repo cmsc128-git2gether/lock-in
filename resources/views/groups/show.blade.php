@@ -1,46 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <title>Group List</title>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    @vite(['resources/css/app.css','resources/js/app.js'])
-</head>
-<body class="app-bg">
-<div class="app-shell">
+@extends('layouts.sidebar')
+@section('title', $group->name)
 
-    @extends('layouts.sidebar')
-    @section('title', 'Recently Deleted')
-
-    @section('content')
-    <div class="main-content">
+@section('content')
+        <!-- tasks: {{ $tasks->count() }} | members: {{ $members->count() }} -->
         @php
+        //manager can delete task
+        $canManage = auth()->user()->can('manageMembers', $group);
+
             $activeCount = $tasks->where('is_done', false)->count();
             $doneCount = $tasks->where('is_done', true)->count();
             $overdueCount = $tasks->where('is_done', false)
                 ->filter(fn ($t) => $t->due_at && \Carbon\Carbon::parse($t->due_at)->isPast())
                 ->count();
         @endphp
+
         <section class="card greeting-card">
             <div>
-                <h1 class="greeting-title">Group Lists</h1>
-                <p class="greeting-sub">Manage your group list.</p>
+                <h1 class="greeting-title">{{ $group->name }}</h1>
+                <p class="greeting-sub">
+                    Group list | owned by {{ $group->owner_id === auth()->id() ? 'you' : ($group->owner->name ?? 'Unknown') }}
+                </p>
             </div>
             <div class="stats-metrics">
                 <div class="stat">
-                    <span class="stat-label">Active Group Tasks</span>
+                    <span class="stat-label">Active</span>
                     <span class="stat-value" id="stat-active">{{ $activeCount }}</span>
                 </div>
-            </div>
-            <div class="stat">
-                <span class="stat-label">Completed</span>
-                <span class="stat-value" id="stat-done">{{ $doneCount }}</span>
-            </div>
-            <div class="stat {{ $overdueCount ? 'stat-alert' : '' }}" id="stat-overdue-box">
-                <span class="stat-label">Overdue</span>
-                <span class="stat-value" id="stat-overdue">{{ $overdueCount }}</span>
+                <div class="stat">
+                    <span class="stat-label">Completed</span>
+                    <span class="stat-value" id="stat-done">{{ $doneCount }}</span>
+                </div>
+                <div class="stat {{ $overdueCount ? 'stat-alert' : '' }}" id="stat-overdue-box">
+                    <span class="stat-label">Overdue</span>
+                    <span class="stat-value" id="stat-overdue">{{ $overdueCount }}</span>
+                </div>
             </div>
         </section>
 
@@ -51,88 +44,243 @@
             </ul>
         @endif
 
+        <section class="card task-card">
+        <div class="task-head">
+            <h2 class="task-title">
+                Active Tasks <span class="count-pill" id="task-count">{{ $activeCount }}</span>
+            </h2>
+        </div>
+
 
         {{-- add a task --}}
-        <form method="POST" action="{{ route('groups.tasks.store', $group) }}" class="flex flex-wrap gap-2">
+        <form method="POST" action="{{ route('groups.tasks.store', $group) }}" class="group-add-form">
             @csrf
-            <input type="text" name="title" placeholder="New task" required class="border rounded px-3 py-2 flex-1">
-            <select name="priority" class="border rounded px-2">
+            <input type="text" name="title" placeholder="Add a task…" required class="input input-grow">
+            <select name="priority" class="select" aria-label="Priority">
                 @foreach ($priorities as $p) <option value="{{ $p }}">{{ $p }}</option> @endforeach
             </select>
-            <select name="tag_id" class="border rounded px-2">
+            <select name="tag_id" class="select" aria-label="Tag">
                 <option value="">No tag</option>
                 @foreach ($tags as $tag) <option value="{{ $tag->id }}">{{ $tag->name }}</option> @endforeach
             </select>
-            <input type="datetime-local" name="due_at" class="border rounded px-2">
-            <button class="px-4 py-2 bg-gray-800 text-white rounded">Add</button>
+            <input type="datetime-local" name="due_at" class="input" aria-label="Due date">
+            <button type="submit" class="btn btn-dark">@svg('heroicon-o-plus', 'w-4 h-4') Add</button>
         </form>
 
-        {{-- tasks --}}
-        <div class="space-y-2"> 
-            @forelse ($tasks as $task)
-                <div class="flex items-center gap-3 border rounded p-3 {{ $task->is_done ? 'bg-green-50 opacity-60' : 'bg-white' }}">
-                    <form method="POST" action="{{ route('groups.tasks.update', [$group, $task]) }}">
-                        @csrf @method('PATCH')
-                        <input type="hidden" name="is_done" value="0">
-                        <input type="checkbox" name="is_done" value="1"
-                               {{ $task->is_done ? 'checked' : '' }} onchange="this.form.submit()">
-                    </form>
+        {{-- tasks table --}}
+        @if ($tasks->isEmpty())
+            <p class="empty-message">No tasks in this list yet.</p>
+        @else
+            <div class="task-toolbar">
+                {{-- sort --}}
+                <select id="filterPriority" class="select" onchange="filterByColumn('priority', this.value)" aria-label="Filter by priority">
+                    <option value="">All priorities</option>
+                    @foreach ($priorities as $priority)
+                        <option value="{{ $priority }}">{{ $priority }}</option>
+                    @endforeach
+                </select>
 
-                    <span class="{{ $task->is_done ? 'line-through' : '' }}">{{ $task->title }}</span>
+                <select id="filterTag" class="select" onchange="filterByColumn('tag', this.value)" aria-label="Filter by tag">
+                    <option value="">All tags</option>
+                    @foreach ($tags as $tag)
+                        <option value="{{ $tag->name }}">{{ $tag->name }}</option>
+                    @endforeach
+                </select>
 
-                    <span class="ml-auto text-xs text-gray-500">
-                        {{ $task->priority }} · by {{ $task->user_id === auth()->id() ? 'you' : $task->user->name }}
-                    </span>
+                <select id="sortSelect" class="select" onchange="sortTable(this.value)" aria-label="Sort tasks">
+                    <option value="created_at">Sort: Date added</option>
+                    <option value="due_at">Sort: Due date</option>
+                    <option value="priority">Sort: Priority</option>
+                    <option value="tag_id">Sort: Tag</option>
+                </select>
 
-                    @if ($task->user_id === auth()->id())
-                        <a href="{{ url('/tasks/'.$task->id.'/edit') }}" class="text-sm underline">Edit</a>
-                    @endif
-                </div>
-            @empty
-                <p class="text-gray-500">No tasks in this list yet.</p>
-            @endforelse
-        </div>
-
-        {{-- members --}}
-        <div>
-            <h3 class="font-semibold mb-2">Members</h3>
-            <ul class="space-y-1">
-                @foreach ($members as $member)
-                    <li class="flex items-center gap-2">
-                        <span>{{ $member->name }} <span class="text-gray-500">({{ $member->email }})</span></span>
-                        @if ($member->id === $group->owner_id)
-                            <span class="text-xs bg-gray-200 rounded px-2">owner</span>
-                        @elseif ($member->id === auth()->id() || auth()->user()->can('manageMembers', $group))
-                            <form method="POST" action="{{ route('groups.members.destroy', [$group, $member]) }}"
-                                  onsubmit="return confirm('Are you sure?')">
-                                @csrf @method('DELETE')
-                                <button class="text-sm text-red-600 underline">
-                                    {{ $member->id === auth()->id() ? 'Leave' : 'Remove' }}
-                                </button>
+                <label class="switch">
+                    <input type="checkbox" id="showDone" onchange="filterByColumn('status', this.checked ? '' : 'active')">
+                    <span class="switch-track"></span>
+                    <span class="switch-text">Show completed ({{ $doneCount }})</span>
+                </label>
+            </div>
+            {{-- tasks itself --}}
+            <table id="table-tasks" class="task-table">
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                        <th>Due</th>
+                        <th>Priority</th>
+                        <th>Tag</th>
+                        <th>Added by</th>
+                        <th class="col-actions"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach ($tasks as $task)
+                    @php
+                        $due = $task->due_at ? \Carbon\Carbon::parse($task->due_at) : null;
+                        $overdue = $due && $due->isPast() && ! $task->is_done;
+                        $mine = $task->user_id === auth()->id();
+                        $who = $mine ? 'You' : ($task->user->name ?? 'Unknown');
+                    @endphp
+                    <tr class="{{ $task->is_done ? 'task-done' : '' }}"
+                        data-overdue="{{ $overdue ? 1 : 0 }}"
+                        data-created="{{ $task->created_at }}"
+                        data-due="{{ $task->due_at }}"
+                        data-priority="{{ $task->priority }}"
+                        data-tag="{{ $task->tag->name ?? '' }}"
+                        data-tag-id="{{ $task->tag_id ?? 0 }}"
+                        data-status="{{ $task->is_done ? 'done' : 'active' }}">
+                        <td>
+                            <form method="POST" action="{{ route('groups.tasks.update', [$group, $task]) }}" class="checkbox-form">
+                                @csrf @method('PATCH')
+                                <input type="hidden" name="is_done" value="0">
+                                <input type="checkbox" id="gtask-{{ $task->id }}" class="todo" name="is_done" value="1"
+                                        @checked($task->is_done) onchange="this.form.submit()">
+                                <label for="gtask-{{ $task->id }}">{{ $task->title }}</label>
                             </form>
-                        @endif
-                    </li>
+                        </td>
+                        <td class="due {{ $overdue ? 'overdue' : '' }}">
+                            {{ $due ? $due->format('M d, Y · g:i A') : '—' }}
+                        </td>
+                        <td><span class="priority {{ $task->priority }}">{{ $task->priority }}</span></td>
+                        <td>
+                            @if ($task->tag)
+                                <span class="tag" style="--tag: {{ $task->tag->color ?? '#3b82f6' }}">
+                                    <span class="tag-icon">
+                                        @svg('heroicon-o-' . ($task->tag->icon ?? 'tag'), 'w-full h-full')
+                                    </span>
+                                    {{ $task->tag->name }}
+                                </span>
+                            @else
+                                <span class="muted">—</span>
+                            @endif
+                        </td>
+                        <td>
+                            <span class="by">
+                                <span class="avatar avatar-sm">{{ strtoupper(substr($who, 0, 1)) }}</span>
+                                {{ $who }}
+                            </span>
+                        </td>
+                        <td class="col-actions">
+                            @if ($mine || $canManage)
+                                <div class="action-dropdown">
+                                    <button class="action-btn" onclick="toggle(event)" type="button" aria-label="Task actions">&#8942;</button>
+                                    <div class="dropdown-choices">
+                                        @if ($mine)
+                                            <button type="button" class="dropdown-item"
+                                                    onclick="document.getElementById('gedit-popup-{{ $task->id }}').showModal()">Edit</button>
+                                        @endif
+                                        <form class="delete-form" style="margin:0"
+                                            data-task-id="{{ $task->id }}"
+                                            data-task-title="{{ $task->title }}"
+                                            data-destroy-url="{{ route('groups.tasks.destroy', [$group, $task]) }}"
+                                            data-restore-url="{{ route('groups.tasks.restore', [$group, $task->id]) }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" class="dropdown-item delete"
+                                                    onclick="return confirm('Are you sure you want to delete this task?') && handleDelete(this)">Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            @endif
+                        </td>
+                    </tr>
                 @endforeach
-            </ul>
+                </tbody>
+            </table>
 
-            @can('manageMembers', $group)
-                <form method="POST" action="{{ route('groups.members.store', $group) }}" class="flex gap-2 mt-3">
-                    @csrf
-                    <input type="email" name="email" placeholder="teammate@example.com" required
-                           class="border rounded px-3 py-2 flex-1">
-                    <button class="px-4 py-2 bg-gray-800 text-white rounded">Add by email</button>
-                </form>
-            @endcan
+            <p class="empty-message" id="no-results" hidden>
+                No tasks to show. Try changing the filters, or turn on “Show completed”.
+            </p>
+        @endif
+        </section>
+
+    {{-- members --}}
+    <section class="card task-card">
+        <div class="task-head">
+            <h2 class="task-title">Members <span class="count-pill">{{ count($members) }}</span></h2>
+            <div class="task-actions">
+                <button type="button" class="btn btn-outline" onclick="document.getElementById('tag-form-popup').showModal()">
+                    @svg('heroicon-o-tag', 'w-4 h-4') New tag
+                </button>
+            </div>
         </div>
 
-        @can('delete', $group)
-            <form method="POST" action="{{ route('groups.destroy', $group) }}"
-                  onsubmit="return confirm('Delete this list? Tasks go back to their creators.')">
-                @csrf @method('DELETE')
-                <button class="text-sm text-red-600 underline">Delete this list</button>
+        <ul class="member-list">
+            @foreach ($members as $member)
+                <li class="member">
+                    <span class="avatar">{{ strtoupper(substr($member->name, 0, 1)) }}</span>
+                    <div class="member-text">
+                        <strong>{{ $member->name }}</strong>
+                        <small>{{ $member->email }}</small>
+                    </div>
+
+                    @if ($member->id === $group->owner_id)
+                        <span class="pill-neutral">Owner</span>
+                    @elseif ($member->id === auth()->id() || auth()->user()->can('manageMembers', $group))
+                        <form method="POST" action="{{ route('groups.members.destroy', [$group, $member]) }}"
+                            onsubmit="return confirm('Are you sure?')">
+                            @csrf @method('DELETE')
+                            <button class="btn btn-danger btn-sm">
+                                {{ $member->id === auth()->id() ? 'Leave' : 'Remove' }}
+                            </button>
+                        </form>
+                    @endif
+                </li>
+            @endforeach
+        </ul>
+
+        @can('manageMembers', $group)
+            <form method="POST" action="{{ route('groups.members.store', $group) }}" class="group-add-form member-add">
+                @csrf
+                <input type="email" name="email" placeholder="teammate@example.com" required class="input input-grow">
+                <button type="submit" class="btn btn-dark">Add by email</button>
             </form>
         @endcan
-    </div>
+    </section>
+
+    @can('delete', $group)
+        <form method="POST" action="{{ route('groups.destroy', $group) }}"
+            onsubmit="return confirm('Delete this list? Tasks go back to their creators.')">
+            @csrf @method('DELETE')
+            <button class="btn btn-danger">Delete this list</button>
+        </form>
+    @endcan
+
+    {{-- edit popups (own tasks only) --}}
+    @foreach ($tasks->where('user_id', auth()->id()) as $task)
+        <dialog id="gedit-popup-{{ $task->id }}" class="popup-modal">
+            <button type="button" class="close-form" onclick="this.closest('dialog').close()">✕</button>
+            <h2>Edit Task</h2>
+            <form action="/tasks/{{ $task->id }}/submit" class="popup-form" method="POST">
+                @csrf
+                @method('PATCH')
+                <label for="gtitle-{{ $task->id }}">Task Name</label>
+                <input type="text" id="gtitle-{{ $task->id }}" name="title" value="{{ $task->title }}" required>
+
+                <label for="gdue-{{ $task->id }}">Task Due Date and Time</label>
+                <input type="datetime-local" id="gdue-{{ $task->id }}" name="due_at"
+                    value="{{ $task->due_at ? \Carbon\Carbon::parse($task->due_at)->format('Y-m-d\TH:i') : '' }}">
+
+                <label for="gpriority-{{ $task->id }}">Task Priority</label>
+                <select name="priority" id="gpriority-{{ $task->id }}" required>
+                    @foreach ($priorities as $priority)
+                        <option value="{{ $priority }}" @selected($task->priority === $priority)>{{ $priority }}</option>
+                    @endforeach
+                </select>
+
+                <label for="gtag-{{ $task->id }}">Task Tag</label>
+                <select name="tag_id" id="tag_id-{{ $task->id }}">
+                    <option value="">--No Tag--</option>
+                    @foreach ($tags as $tag)
+                        <option value="{{ $tag->id }}" @selected($task->tag_id === $tag->id)>
+                            {{ $tag->name }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <button type="submit">Save</button>
+            </form>
+        </dialog>
+    @endforeach
+
+    @include('components.add-tag-modal')
     @endsection
-</body>
-</html>

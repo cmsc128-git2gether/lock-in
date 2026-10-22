@@ -205,7 +205,8 @@
                     data-priority="{{ $task->priority }}"
                     data-tag="{{ $task->tag->name ?? '' }}"
                     data-tag-id="{{ $task->tag_id ?? 0 }}"
-                    data-status="{{ $task->is_done ? 'done' : 'active' }}">
+                    data-status="{{ $task->is_done ? 'done' : 'active' }}"
+                    data-tag="{{ $task->tag && $task->tag->user_id === auth()->id() ? $task->tag->name : '' }}">
                     <td>
                         <form action="/tasks/{{ $task->id }}" method="POST" class="checkbox-form">
                             @csrf
@@ -221,7 +222,7 @@
                     </td>
                     <td><span class="priority {{ $task->priority }}">{{ $task->priority }}</span></td>
                     <td>
-                        @if ($task->tag)
+                        @if ($task->tag && $task->tag->user_id === auth()->id())
                             <span class="tag" style="--tag: {{ $task->tag->color ?? '#3b82f6' }}">
                                 <span class="tag-icon">
                                     @svg('heroicon-o-' . ($task->tag->icon ?? 'tag'), 'w-full h-full')
