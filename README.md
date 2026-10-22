@@ -8,9 +8,12 @@ A simple todo list app with task priorities, tags, soft-deletes with undo, and c
 * __Editing Task__ - provides a edit form for the users to update changes on their tasks.
 * __Deleting Task__ - deletes tasks of the user.
 * __Undo Option__ - appears after deletion of tasks if the user changed their mind to delete their task.
+* __Recently Deleted Recovery__ - deleted tasks can be recovered or permanently deleted by the user.
 * __Sort and Filter__ - sorts and filters by due date, date added, priority and tags.
 * __Password Reset__ - send password reset emails for user who requested.
 * __Profile Page Management__ - allows user to update user profile.
+* __Collaborative Tasks__ - allows user to share a collaborative list and add their fellow user as a member.
+
 
 ## Project Structure
 Laravel splits backend logic across two folders (`routes` and `app`).
@@ -157,7 +160,7 @@ Authentication routes are defined in `routes/auth.php`.
 | `POST` | `/logout` | `AuthenticatedSessionController@destroy` | Ends the session of the user. |
 
 
-### Example: Creating a task (`POST /tasks`)
+### Example: Creating a task and task ownership(`POST /tasks`)
 
 Request body:
 ```
@@ -189,3 +192,128 @@ Because HTTP is stateless, the app uses server-side sessions to remember who is 
 1. When the user requests for password recovery, the system loads the reset password (`GET /forgot-password`) page, which requires them to submit their email address.
 2. Then upon submitting the form, it will looking for the user's email, generates a hashed token, and sends a password reset email to the user (`POST /forgot-password`).
 3. User opens the emailed link, validates if it has not expired yet, and user can enter a new password. The system updates the password of the user.
+
+## Schema of Users, Tasks, and Groups
+__users__
+```
+Schema::create('users', function (Blueprint $table) {
+   $table->id();
+   $table->string('name');
+   $table->string('email')->unique();
+   $table->timestamp('email_verified_at')->nullable();
+   $table->string('password');
+   $table->rememberToken();
+   $table->timestamps();
+});
+```
+
+__tags__
+```
+Schema::create('tags', function (Blueprint $table) {
+   $table->id();
+   $table->string('name');
+   $table->string('color');
+   $table->timestamps();
+   $table->string('icon')->default('tag');
+});
+```
+
+__tasks__
+```
+Schema::create('tasks', function (Blueprint $table) {
+   $table->id();
+   $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade'); 
+   $table->foreignId('tag_id')->nullable()->constrained('tags')->nullOnDelete();
+   $table->string('title');
+   $table->string('priority')->default('Unlabeled'); // unlabeled, low, medium, high
+   $table->dateTime('due_at')->nullable();
+   $table->boolean('is_done')->default(false);
+   $table->timestamps();
+   $table->softDeletes();  // nullable deleted_at
+   $table->index(['user_id', 'deleted_at']); // for deletion and restore
+});
+```
+
+__groups__
+```
+Schema::create('groups', function (Blueprint $table) {
+   $table->id();
+   $table->foreignId('owner_id')->constrained('users')->cascadeOnDelete();
+   $table->string('name')->nullable();
+   $table->timestamps();
+});
+```
+
+__group_members__
+```
+Schema::create('group_members', function (Blueprint $table) {
+   $table->id();
+   $table->foreignId('group_id')->constrained('groups')->cascadeOnDelete();
+   $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+   $table->string('role')->default('member');
+   $table->timestamps();
+   $table->unique(['group_id', 'user_id']);
+});
+```
+
+__group_tasks__
+```
+Schema::create('group_tasks', function (Blueprint $table) {
+   $table->id();
+   $table->foreignId('group_id')->constrained('groups')->cascadeOnDelete();
+   $table->foreignId('task_id')->constrained('tasks')->cascadeOnDelete();
+   $table->timestamps();
+   $table->unique(['group_id', 'task_id']);
+});
+```
+
+### Schema Relationships
+* `tasks` table uses `user_id` and `tag_id` as foreign id. `user_id` is the owner of the task with a certain `id` and has a tag with `tag_id`.
+* `groups` table has a foreign id `onwer_id` which is the creator of the list, the logged in user creating the collaborative list. 
+* `group_members` lists the group members and owner with foreign id `user_id` and identifies the role, default on member unless `user_id == owner_id`.
+* `group_tasks` has a foreign id `group_id` to identify owner and members included in the collaborative list, and `task_id` that points to the task made for that certain group.
+
+### Logic Flow
+* User can belong to many groups
+* User can have many tasks
+* Task can belong to a user
+* Tasks can be involved in group
+* Group can belong to many group members
+* Group can belong to an owner
+
+## Example: Task Ownership
+Utilizes auth and auth routes from activity 2
+
+Ensures routes are only accessible by authenticated user
+```
+Route::middleware(['auth'])->group(function () {
+   // Routes for tasks and groups
+}
+```
+
+Checks for Task where user_id should be the authenticated logged in user 
+```
+private function userTask($id): Task {
+   return Task::where('user_id', auth()->id())->findOrFail($id);
+}
+```
+
+Group Task Controller gates
+```
+Gate::authorize('view', $group);
+$validated = $request->validate($this->rules()); //valid title check
+
+DB::transaction(function () use ($validated, $request, $group) {
+   $task = Task::create($validated + ['user_id' => $request->user()->id]);
+   $group->tasks()->attach($task->id);
+});
+
+return redirect()->route('groups.show', $group);
+```
+
+Request body example for group task:
+```
+task_id=72
+group_id=1
+```
+returns to route('groups.show')
