@@ -292,6 +292,7 @@ document.querySelectorAll('.icon-grid input[type="radio"]').forEach(radio => {
         });
     });
 
+
 //global Document Event Listeners
 document.addEventListener('click', () => {
     document.querySelectorAll('.th-filter-choices.show, .dropdown-choices.show').forEach(e => e.classList.remove('show'));
