@@ -12,10 +12,10 @@ class GroupTaskController extends Controller
 {
     private function rules(): array {
         return [
-            'title'     =>  'required|string|max:255',
-            'due_at'    =>  'nullable|date',
-            'priority'  =>  'required|in:High,Medium,Low,Unlabeled',
-            'tag_id'    =>  'required|exists:tags,id',
+            'title'     => 'required|string|max:255',
+            'due_at'    => 'nullable|date',
+            'priority'  => 'required|in:High,Medium,Low,Unlabeled',
+            'tag_id'    => 'nullable|exists:tags,id',
         ];
     } 
 

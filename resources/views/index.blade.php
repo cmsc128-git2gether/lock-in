@@ -1,7 +1,7 @@
 
     @extends('layouts.sidebar')
 
-    @section('title', 'Recently Deleted')
+    @section('title', 'Dashboard')
 
     @section('content')
  
