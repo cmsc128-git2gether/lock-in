@@ -261,6 +261,18 @@ function togglePassword(inputId, button) {
     }
 }
 
+function addEmailField() {
+    const container = document.getElementById('email-inputs-container');
+    const wrapper = document.createElement('div');
+    wrapper.style.display = 'flex';
+    wrapper.style.gap = '8px';
+    wrapper.innerHTML = `
+        <input type="email" name="emails[]" placeholder="teammate@example.com" style="flex: 1;">
+        <button type="button" class="btn btn-outline" onclick="this.parentElement.remove()">Remove</button>
+    `;
+    container.appendChild(wrapper);
+}
+
 //grid selector for custom tags:
 document.querySelectorAll('.icon-grid input[type="radio"]').forEach(radio => {
         if(radio.checked) {
@@ -300,3 +312,4 @@ window.handleDelete = handleDelete;
 window.restoreTask = restoreTask;
 window.sortTable = sortTable;
 window.togglePassword = togglePassword;
+window.addEmailField = addEmailField;
