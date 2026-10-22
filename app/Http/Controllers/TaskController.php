@@ -12,10 +12,10 @@ class TaskController extends Controller
 {
     private function rules(): array {
         return [
-            'title'     =>  'required|string|max:255',
-            'due_at'    =>  'nullable|date',
-            'priority'  =>  'required|in:High,Medium,Low,Unlabeled',
-            'tag_id'    =>  'required|exists:tags,id',
+            'title' => 'required|string|max:255',
+            'due_at'   => 'nullable|date',
+            'priority' => 'required|in:High,Medium,Low,Unlabeled',
+            'tag_id'  =>   'nullable|exists:tags,id',
         ];
     }
 
@@ -33,7 +33,7 @@ class TaskController extends Controller
             ->orderByRaw('due_at IS NULL')
             ->get();
         
-        $tags = Tag::all();
+        $tags = Tag::mine()->get();
         $priorities = Task:: priorities;
 
         return view('index', ['tasks' => $tasks, 'tags' => $tags, 'priorities' => $priorities]);
@@ -42,12 +42,7 @@ class TaskController extends Controller
     public function store(Request $request)
     {
 
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'due_at'   => 'nullable|date',
-            'priority' => 'required|in:High,Medium,Low,Unlabeled',
-            'tag_id'  =>   'nullable|exists:tags,id',
-        ]); //valid title check
+        $validated = $request->validate($this->rules()); //valid title check
 
         Task::create($validated + ['user_id' => auth()->id()]) ;
 
@@ -64,7 +59,7 @@ class TaskController extends Controller
     // edit
     public function edit($id){
         // $task = Task::findOrFail($id);
-        $tags = Tag::all();
+        $tags = Tag::mine()->get();
         $priorities = Task:: priorities;
         
         // goes to edit page

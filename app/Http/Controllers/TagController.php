@@ -17,7 +17,7 @@ class TagController extends Controller
             'tag_id' => ['nullable', Rule::exists('tags', 'id')->where('user_id', auth()->id())],
         ]);
 
-        Tag::create($validated);
+        Tag::create($validated + ['user_id' => auth()->id()]);
 
         return back()->with('success', 'Custom tag created successfully!');
     }
