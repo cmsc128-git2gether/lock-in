@@ -77,4 +77,4 @@
             @endif
         </section>
     </div>
-    @endsection
+@endsection

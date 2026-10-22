@@ -1,99 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Lock In Dashboard</title>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    @vite(['resources/css/app.css','resources/js/app.js'])
-</head>
-<body class="app-bg">
-<div class="app-shell">
 
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-top">
-            <a href="/" class="brand">
-                <span class="brand-mark"></span>
-                {{ config('app.name') }}
-            </a>
-        </div>
-        <nav class="sidebar-nav">
-            <a href="#" class="sidebar-item active">
-                @svg('heroicon-o-clipboard-document-check', 'w-4 h-4')
-                <span>Personal</span>
-            </a>
-        </nav>
-        
+    @extends('layouts.sidebar')
 
-        <div class="sidebar-heading-row">
-            <p class="sidebar-heading">Lists</p>
-            <button type="button" class="sidebar-add" aria-label="New list"
-                    onclick="document.getElementById('group-form-popup').showModal()">
-                @svg('heroicon-o-plus', 'w-3.5 h-3.5')
-            </button>
-        </div>
+    @section('title', 'Recently Deleted')
 
-        <details class="sidebar-group" open>
-            <summary>
-                @svg('heroicon-o-chevron-down', 'w-3 h-3 chevron')
-                My group lists
-            </summary>
-            {{-- later: @foreach over lists you own --}}
-            @forelse ($ownedGroups ?? [] as $group)
-            <a href="{{ route('groups.show', $group) }}" class="sidebar-item sub {{ request()->routeIs('groups.show') && request()->group->id === $group->id ? 'is-active' : ''}}">
-                {{ $group->name }}
-            </a>
-            @empty
-                <span class="sidebar-item sub muted" style="padding-left: 24px; font-size: 0.85rem;">No owned groups yet</span>
-            @endforelse
-        </details>
-
-        <details class="sidebar-group" open>
-            <summary>
-                @svg('heroicon-o-chevron-down', 'w-3 h-3 chevron')
-                Shared with me
-            </summary>
-            {{-- later: @foreach over lists you were added to --}}
-            @forelse ($sharedGroups ?? [] as $group)
-            <a href="{{ route('groups.show', $group) }}" 
-            class="sidebar-item sub {{ request()->routeIs('groups.show') && request()->route('group')->id === $group->id ? 'is-active' : '' }}">
-                {{ $group->name }}
-                <small class="sidebar-owner">by {{ $group->owner->name ?? 'Unknown' }}</small>
-            </a>
-            @empty
-                <span class="sidebar-item sub muted" style="padding-left: 24px; font-size: 0.85rem;">No shared groups yet</span>
-            @endforelse
-        </details>
-
-        <div class="sidebar-bottom">
-            <div class="trash-card">
-            @php
-                $trashCount = \App\Models\Task::onlyTrashed()->where('user_id', auth()->id())->count();
-            @endphp
-                <a href="{{ url('/tasks/trash') }}"
-                    class="sidebar-link sidebar-trash {{ request()->is('tasks/trash') ? 'is-active' : '' }}">
-                    @svg('heroicon-o-trash', 'w-4 h-4')
-                    <span>Recently Deleted</span>
-                    @if ($trashCount > 0)
-                        <span class="sidebar-count">{{ $trashCount }}</span>
-                    @endif
-                </a>
-            </div>
-            <div class="user-card">
-                <span class="avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span>
-                <div class="user-card-text">
-                    <strong>{{ Auth::user()->name }}</strong>
-                    <small>{{ Auth::user()->email }}</small>
-                </div>
-            </div>
-            <div class="user-actions">
-                <a href="{{ route('profile.edit') }}">Edit Profile</a>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit">Log out</button>
-                </form>
-            </div>
-        </div>
-    </aside>
-
+    @section('content')
+ 
     <div class="main-content">
         <div class="main-content">
             @php
@@ -157,6 +68,7 @@
     @if ($tasks->isEmpty())
         <p class="empty-message">No todos yet. Make a new one!</p>
     @else
+        <h3 class="toolbar-title">Filter and Sort</h3>
         <div class="task-toolbar">
             <select id="filterPriority" class="select" onchange="filterByColumn('priority', this.value)" aria-label="Filter by priority">                <option value="">All priorities</option>
                 @foreach ($priorities as $priority)
@@ -325,5 +237,4 @@
 
 @include('components.add-tag-modal')
 @include('components.add-task-modal')
-</body>
-</html>
+@endsection
