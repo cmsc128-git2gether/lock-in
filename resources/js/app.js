@@ -1,5 +1,25 @@
 import './bootstrap';
 
+// prevent double submission
+document.addEventListener('submit', (e) => {
+    if (e.defaultPrevented) return;
+    const btn = e.submitter || e.target.querySelector('button[type="submit"]');
+    if (!btn || btn.disabled) return;
+    setTimeout(() => {
+        btn.dataset.label = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner" aria-hidden="true"></span> Saving…';
+    }, 0);
+});
+
+// restore buttons when the user navigates back (bfcache)
+window.addEventListener('pageshow', (e) => {
+    if (!e.persisted) return;
+    document.querySelectorAll('button[data-label]').forEach(b => {
+        b.disabled = false; b.innerHTML = b.dataset.label;
+    });
+});
+
 function updateTaskCount() {
     const rows = [...document.querySelectorAll('#table-tasks tbody tr')].filter(r => !r.dataset.deleted);
     const active = rows.filter(r => r.dataset.status === 'active');
@@ -60,7 +80,7 @@ function handleDelete(button){
         row.style.display = ''; // restore row if delete failed
         delete row.dataset.deleted;
         updateTaskCount();
-        alert('Something went wrong deleting that task.');
+        showToast('Something went wrong deleting that task.');
     });
 
 }
@@ -117,7 +137,7 @@ function restoreTask(taskId, row, notif) {
         notif.remove();
     })
     .catch(() => {
-        alert('Could not undo — please refresh.');
+        showToast('Could not undo — please refresh.');
     });
 }
 
@@ -346,6 +366,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateCreateButton(); // correct state on page load
 });
+//custom alert
+function showToast(message) {
+    const box = document.getElementById('notif-container');
+    if (!box) return;
+    const n = document.createElement('div');
+    n.className = 'notif';
+    n.setAttribute('role', 'alert');
+    const s = document.createElement('span');
+    s.textContent = message;
+    n.appendChild(s);
+    box.appendChild(n);
+    setTimeout(() => n.remove(), 4000);
+}
 
 
 window.updateTaskCount = updateTaskCount;
