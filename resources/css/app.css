@@ -217,6 +217,24 @@ body.default-bg {
     transform: rotate(-90deg);
 }
 
+.group-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 1.25rem;
+    align-items: start;
+}
+.group-members { position: sticky; top: 1.5rem; }
+
+.group-members .member-text small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+    .group-layout { grid-template-columns: 1fr; }
+    .group-members { position: static; }
+}
 
 
 /* user card */
