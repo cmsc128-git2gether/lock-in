@@ -8,7 +8,7 @@
     <div class="main-content">
             @php
                 $hour = now()->hour;
-                $greeting = $hour < 12 ? 'Good Morning' : ($hour < 18 ? 'Good Afternoon' : 'Good Evening');
+                $greeting = "Good day";
 
                 $activeCount = $tasks->where('is_done', false)->count();
                 $doneCount = $tasks->where('is_done', true)->count();
@@ -54,6 +54,7 @@
         <h2 class="task-title">
             Active Tasks <span class="count-pill" id="task-count">{{ $tasks->where('is_done', false)->count() }}</span>
         </h2>
+        <br>
         <div class="task-actions">
             <button type="button" class="btn btn-dark" onclick="document.getElementById('form-popup').showModal()">
                 @svg('heroicon-o-plus', 'w-4 h-4') Add task
@@ -208,26 +209,6 @@
     <div id="notif-container">
     </div>
 
-    {{-- new list popup --}}
-    <dialog id="group-form-popup" class="popup-modal">
-        <button type="button" class="close-form" onclick="this.closest('dialog').close()">X</button>
-        <h2>New list</h2>
-        <form method="POST" action="{{ route('groups.store') }}" class="popup-form">
-            @csrf
-            <label for="group-name">List name</label>
-            <input type="text" id="group-name" name="name" maxlength="255" required>
-
-            <label>Members (optional)</label>
-            <div id="email-inputs-container" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
-                <div style="display: flex; gap: 8px;">
-                    <input type="email" name="emails[]" placeholder="teammate@example.com" style="flex: 1;">
-                    <button type="button" class="btn btn-outline" onclick="addEmailField()">Add</button>
-                </div>
-            </div>
-
-            <button type="submit">Create</button>
-        </form>
-    </dialog>
 
 @include('components.add-task-modal')
 

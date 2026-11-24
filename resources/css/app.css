@@ -8,10 +8,10 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
-    --color-accent: #5b3df5;
-    --color-accent-soft: #eeeaff;
+    --color-accent: #1e5f6e;
+    --color-accent-soft: #e6f2f4;
     --color-ink: #1f2430;
-    --color-muted: #8b93a1;
+    --color-muted: #64748b;
     --radius-card: 16px;
 }
 
@@ -41,10 +41,24 @@ body.default-bg {
 
 /* -------app shell ------- */
 .app-bg {
+    position: relative;
     min-height: 100vh;
-    background: linear-gradient(180deg, #e9eaec, #d9dadd);
+    background: none;
     color: var(--color-ink);
 }
+
+.app-bg::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+        url('../images/pretty_forest2.jpg') center / cover no-repeat;
+    filter: blur(8px);
+    transform: scale(1.1);
+    z-index: -1;
+}
+
 
 .app-shell {
     display: flex;
@@ -71,11 +85,15 @@ body.default-bg {
     min-height: calc(100vh - 3rem);
     display: flex;
     flex-direction: column;
-    background: #fff;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.45);
     border-radius: var(--radius-card);
     padding: 1.25rem 1rem;
-    box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
 }
+
 
 .sidebar-top {
     display: flex;
@@ -162,6 +180,19 @@ body.default-bg {
     color: #4b5563;
     text-decoration: none;
     border-style: 1 px dashed #e3e5e9;
+    background: rgba(255, 255, 255, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+}
+
+.sidebar-item:hover {
+    transform: translateX(2px);
+    background: #f4f5f7;
+}
+
+.sidebar-item.active {
+    background: #f4f5f7;
+    color: var(--color-ink);
+    font-weight: 600;
 }
 
 .sidebar-add {
@@ -174,19 +205,44 @@ body.default-bg {
     height: 12px;
 }
 
-.sidebar-item:hover {
-    background: #f4f5f7;
+.sidebar-sublist {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+    margin-left: 1.65rem;
+    padding-left: .85rem;
+    margin-top: .25rem;
+    border-left: 1.5px solid rgba(30, 95, 110, 0.25);
 }
 
-.sidebar-item.active {
-    background: #f4f5f7;
-    color: var(--color-ink);
-    font-weight: 600;
-}
+
 .sidebar-item.sub {
-    padding-left: 2rem;
+    padding: .35rem .65rem;
+    font-size: .83rem;
+    background: transparent;
+    border-color: transparent;
     flex-wrap: wrap;
 }
+
+.sidebar-item.sub::before {
+    content: '•';
+    font-size: .9rem;
+    line-height: 1;
+    color: var(--color-muted);
+}
+
+.sidebar-item.sub:hover,
+.sidebar-item.sub.active {
+    background: rgba(255, 255, 255, 0.78);
+    border-color: rgba(30, 95, 110, 0.25);
+}
+
+.sidebar-item.sub.active::before {
+    color: var(--color-accent);
+}
+
+
+
 
 .sidebar-owner {
     width: 100%;
@@ -216,6 +272,8 @@ body.default-bg {
 .sidebar-group:not([open]) .chevron {
     transform: rotate(-90deg);
 }
+
+
 
 .group-layout {
     display: grid;
@@ -287,7 +345,7 @@ body.default-bg {
     padding: 0;
     color: var(--color-muted);
     cursor: pointer;
-    text-decoration: none;
+    text-decoration: underline;
 }
 .user-actions a:hover,
 .user-actions button:hover { color: var(--color-ink); }
@@ -315,9 +373,12 @@ body.default-bg {
 
 /* ---------- shared card ---------- */
 .card {
-    background: #fff;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.45);
     border-radius: var(--radius-card);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
 }
 
 .app-shell .main-content {
@@ -429,7 +490,7 @@ body.default-bg {
 .task-title {
     display: flex;
     align-items: center;
-    gap: .6rem;
+    row-gap: .6rem;
     font-size: 1.15rem;
     font-weight: 700;
 }
@@ -610,6 +671,13 @@ body.default-bg {
     margin-top: 20px;
 }
 
+.trash-tasks .col-actions{
+    width: 1%;
+    white-space: nowrap;
+    text-align: right;
+}
+
+/* ----- dates beyond and not beyond deadline */
 
 .due {
     color: #4b5563;
@@ -651,7 +719,6 @@ body.default-bg {
     padding-block: 0;
 }
 .priority::before {
-    content: '';
     width: 6px; height: 6px;
     border-radius: 50%;
     background: currentColor;
@@ -1243,6 +1310,32 @@ body.default-bg {
     stroke: #3b82f6;
 }
 
+/* adding new list */
+.email-inputs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.email-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.email-input-row input {
+    flex: 1;
+}
+
+.add-email-row-btn {
+    align-self: flex-start;
+    margin-bottom: 12px;
+}
+
+
+
+
 
 
 /* ------ misc ------*/
@@ -1261,6 +1354,8 @@ body.default-bg {
     color: #6b7280;
     text-decoration: none;
     font-size: 14px;
+    background: rgba(255, 255, 255, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.45);
 }
 .sidebar-trash:hover { background: #f1f5f9; color: #132224; }
 .sidebar-trash.is-active { background: #1f5f66; color: #fff; }

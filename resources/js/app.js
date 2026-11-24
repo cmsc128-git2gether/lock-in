@@ -263,14 +263,16 @@ function togglePassword(inputId, button) {
 
 function addEmailField() {
     const container = document.getElementById('email-inputs-container');
+    if (!container) return;
+
     const wrapper = document.createElement('div');
-    wrapper.style.display = 'flex';
-    wrapper.style.gap = '8px';
+    wrapper.className = 'email-input-row';
     wrapper.innerHTML = `
-        <input type="email" name="emails[]" placeholder="teammate@example.com" style="flex: 1;">
-        <button type="button" class="btn btn-outline" onclick="this.parentElement.remove()">Remove</button>
+        <input type="email" name="emails[]" placeholder="teammate@example.com">
+        <button type="button" class="btn btn-outline remove-email-btn" onclick="this.parentElement.remove()" aria-label="Remove email">&times;</button>
     `;
     container.appendChild(wrapper);
+    wrapper.querySelector('input').focus();
 }
 
 //grid selector for custom tags:
@@ -301,8 +303,23 @@ document.addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const showDone = document.getElementById('showDone');
     if (showDone) activeFilters.status = showDone.checked ? '' : 'active';
+
+    // for the email class deisgn
+    const emailInput = document.getElementById('email-input');
+    const addEmailBtn = document.getElementById('add-email-btn');
+
+    if (emailInput && addEmailBtn) {
+        addEmailBtn.addEventListener('click', addEmailChip);
+
+        emailInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
+    }
     applyFilters();
 });
+
 
 
 window.updateTaskCount = updateTaskCount;
