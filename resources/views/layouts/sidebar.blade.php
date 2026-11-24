@@ -23,7 +23,7 @@
 
         <nav class="sidebar-nav">
             <a href="{{ route('dashboard') }}"
-               class="sidebar-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                class="sidebar-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                 @svg('heroicon-o-clipboard', 'w-3.5 h-3.5') <span> Personal</span>
             </a>
         </nav>
@@ -39,38 +39,42 @@
         <details class="sidebar-group" open>
             <summary>
                 @svg('heroicon-o-chevron-down', 'w-3 h-3 chevron')
-                My group lists
+                <span>My group lists</span>
             </summary>
-            @forelse ($ownedGroups ?? [] as $group)
-                <a href="{{ route('groups.show', $group) }}"
-                   class="sidebar-item sub {{ $currentGroupId === $group->id ? 'active' : '' }}">
-                    {{ $group->name }}
-                </a>
-            @empty
-                <span class="sidebar-item sub muted" style="padding-left: 24px; font-size: 0.85rem;">No owned groups yet</span>
-            @endforelse
+            <div class="sidebar-sublist">
+                @forelse ($ownedGroups ?? [] as $group)
+                    <a href="{{ route('groups.show', $group) }}"
+                        class="sidebar-item sub {{ $currentGroupId === $group->id ? 'active' : '' }}">
+                        {{ $group->name }}
+                    </a>
+                @empty
+                    <span class="sidebar-empty">No owned groups yet</span>
+                @endforelse
+            </div>
         </details>
 
         <details class="sidebar-group" open>
             <summary>
                 @svg('heroicon-o-chevron-down', 'w-3 h-3 chevron')
-                Shared with me
+                <span>Shared with me</span>
             </summary>
-            @forelse ($sharedGroups ?? [] as $group)
-                <a href="{{ route('groups.show', $group) }}"
-                   class="sidebar-item sub {{ $currentGroupId === $group->id ? 'active' : '' }}">
-                    {{ $group->name }}
-                    <small class="sidebar-owner">by {{ $group->owner->name ?? 'Unknown' }}</small>
-                </a>
-            @empty
-                <span class="sidebar-item sub muted" style="padding-left: 24px; font-size: 0.85rem;">No shared groups yet</span>
-            @endforelse
+            <div class="sidebar-sublist">
+                @forelse ($sharedGroups ?? [] as $group)
+                    <a href="{{ route('groups.show', $group) }}"
+                        class="sidebar-item sub {{ $currentGroupId === $group->id ? 'active' : '' }}">
+                        {{ $group->name }}
+                        <small class="sidebar-owner">by {{ $group->owner->name ?? 'Unknown' }}</small>
+                    </a>
+                @empty
+                    <span class="sidebar-empty">No groups shared with you yet.</span>
+                @endforelse
+            </div>
         </details>
 
         <div class="sidebar-bottom">
             <div class="trash-card">
                 <a href="/tasks/trash"
-                   class="sidebar-link sidebar-trash {{ request()->routeIs('tasks.trash') ? 'is-active' : '' }}">
+                    class="sidebar-link sidebar-trash {{ request()->routeIs('tasks.trash') ? 'is-active' : '' }}">
                     @svg('heroicon-o-trash', 'w-4 h-4')
                     <span>Recently Deleted</span>
                     @if (($trashCount ?? 0) > 0)
@@ -102,19 +106,22 @@
     {{-- new list popup --}}
     <dialog id="group-form-popup" class="popup-modal">
         <button type="button" class="close-form" onclick="this.closest('dialog').close()">X</button>
-        <h2>Group Lists</h2>
+        <h2>New list</h2>
         <form method="POST" action="{{ route('groups.store') }}" class="popup-form">
             @csrf
-            <label for="group-name">Owned by Me</label>
+            <label for="group-name">List name</label>
             <input type="text" id="group-name" name="name" maxlength="255" required>
 
-            <label>Members (optional)</label>
-            <div id="email-inputs-container" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
-                <div style="display: flex; gap: 8px;">
-                    <input type="email" name="emails[]" placeholder="teammate@example.com" style="flex: 1;">
-                    <button type="button" class="btn btn-outline" onclick="addEmailField()">Add</button>
+            <label>Add members (optional)</label>
+            <div id="email-inputs-container" class="email-inputs-list">
+                <div class="email-input-row">
+                    <input type="email" name="emails[]" placeholder="teammate@example.com">
                 </div>
             </div>
+
+            <button type="button" class="btn btn-outline add-email-row-btn" onclick="addEmailField()">
+                + Add another email
+            </button>
 
             <button type="submit">Create</button>
         </form>

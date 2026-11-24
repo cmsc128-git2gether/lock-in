@@ -18,7 +18,7 @@
         <div>
             <h1 class="greeting-title">{{ $group->name }}</h1>
             <p class="greeting-sub">
-                Group list | owned by {{ $group->owner_id == auth()->id() ? 'you' : ($group->owner->name ?? 'Unknown') }}
+                Group list (owned by {{ $group->owner_id == auth()->id() ? 'you' : ($group->owner->name ?? 'Unknown') }})
             </p>
         </div>
         <div class="stats-metrics">
@@ -59,28 +59,15 @@
         <section class="card task-card">
             <div class="task-head">
                 <h2 class="task-title">
-                    Active Tasks <span class="count-pill" id="task-count">{{ $activeCount }}</span>
+                    Active Tasks <span class="count-pill" id="task-count">{{ $tasks->where('is_done', false)->count() }}</span>
                 </h2>
+                <div class="task-actions">
+                    <button type="button" class="btn btn-dark" onclick="document.getElementById('group-task-popup').showModal()">
+                        @svg('heroicon-o-plus', 'w-4 h-4') Add task
+                    </button>
+                </div>
             </div>
 
-            {{-- add a task --}}
-            <form method="POST" action="{{ route('groups.tasks.store', $group) }}" class="group-add-form">
-                @csrf
-                <input type="text" name="title" placeholder="Add a task…" required class="input input-grow">
-                <select name="priority" class="select" aria-label="Priority">
-                    @foreach ($priorities as $p)
-                        <option value="{{ $p }}">{{ $p }}</option>
-                    @endforeach
-                </select>
-                <select name="tag_id" class="select" aria-label="Tag">
-                    <option value="">No tag</option>
-                    @foreach ($tags as $tag)
-                        <option value="{{ $tag->id }}">{{ $tag->name }}</option>
-                    @endforeach
-                </select>
-                <input type="datetime-local" name="due_at" class="input" aria-label="Due date">
-                <button type="submit" class="btn btn-dark">@svg('heroicon-o-plus', 'w-4 h-4') Add</button>
-            </form>
 
             @if ($tasks->isEmpty())
                 <p class="empty-message">No tasks in this list yet.</p>
@@ -132,7 +119,7 @@
                             $due = $task->due_at ? \Carbon\Carbon::parse($task->due_at) : null;
                             $overdue = $due && $due->isPast() && ! $task->is_done;
                             $mine = $task->user_id == auth()->id();
-                            $who = $mine ? 'You' : ($task->user->name ?? 'Unknown');
+                            $who = ($task->user->name ?? 'Unknown');
                         @endphp
                         <tr class="{{ $task->is_done ? 'task-done' : '' }}"
                             data-overdue="{{ $overdue ? 1 : 0 }}"
@@ -147,7 +134,7 @@
                                     @csrf @method('PATCH')
                                     <input type="hidden" name="is_done" value="0">
                                     <input type="checkbox" id="gtask-{{ $task->id }}" class="todo" name="is_done" value="1"
-                                           @checked($task->is_done) onchange="this.form.submit()">
+                                        @checked($task->is_done) onchange="this.form.submit()">
                                     <label for="gtask-{{ $task->id }}">{{ $task->title }}</label>
                                 </form>
                             </td>
@@ -183,10 +170,10 @@
                                                         onclick="document.getElementById('gedit-popup-{{ $task->id }}').showModal()">Edit</button>
                                             @endif
                                             <form class="delete-form" style="margin:0"
-                                                  data-task-id="{{ $task->id }}"
-                                                  data-task-title="{{ $task->title }}"
-                                                  data-destroy-url="{{ route('groups.tasks.destroy', [$group, $task]) }}"
-                                                  data-restore-url="{{ route('groups.tasks.restore', [$group, $task->id]) }}">
+                                                    data-task-id="{{ $task->id }}"
+                                                    data-task-title="{{ $task->title }}"
+                                                    data-destroy-url="{{ route('groups.tasks.destroy', [$group, $task]) }}"
+                                                    data-restore-url="{{ route('groups.tasks.restore', [$group, $task->id]) }}">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button" class="dropdown-item delete"
@@ -209,57 +196,57 @@
 
         {{-- ============ RIGHT: members ============ --}}
         <aside class="card task-card group-members">
-            <div class="task-head">
-                <h2 class="task-title">Members <span class="count-pill">{{ count($members) }}</span></h2>
-            </div>
-
-            <ul class="member-list">
-                @foreach ($members as $member)
-                    <li class="member">
+                <div class="task-head">
+                    <h2 class="task-title">
+                        Members <span class="count-pill">{{ $group->members->count() }}</span>
+                    </h2>
+                    <div class="task-actions">
+                        <button type="button" class="btn btn-dark btn-sm" onclick="document.getElementById('add-member-popup').showModal()">
+                            @svg('heroicon-o-plus', 'w-3.5 h-3.5') Add
+                        </button>
+                    </div>
+                </div>
+                <div class="member-list">
+                @foreach ($group->members as $member)
+                    <div class="member">
                         <span class="avatar">{{ strtoupper(substr($member->name, 0, 1)) }}</span>
                         <div class="member-text">
                             <strong>{{ $member->name }}</strong>
                             <small>{{ $member->email }}</small>
                         </div>
-
-                        @if ($member->id == $group->owner_id)
+                        @if ($member->id === $group->owner_id)
                             <span class="pill-neutral">Owner</span>
-                        @elseif ($member->id == auth()->id() || $canManage)
-                            <form method="POST" action="{{ route('groups.members.destroy', [$group, $member]) }}"
-                                  onsubmit="return confirm('Are you sure?')">
-                                @csrf @method('DELETE')
-                                <button class="btn btn-danger btn-sm">
-                                    {{ $member->id == auth()->id() ? 'Leave' : 'Remove' }}
+                        @elseif ($canManage)
+                            <form method="POST" action="{{ route('groups.members.destroy', [$group, $member]) }}">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Remove {{ $member->name }} from this list?')">
+                                    Remove
                                 </button>
                             </form>
                         @endif
-                    </li>
+                    </div>
                 @endforeach
-            </ul>
+            </div>
 
-            @can('manageMembers', $group)
-                <form method="POST" action="{{ route('groups.members.store', $group) }}" class="group-add-form member-add">
+            @if ($canManage)
+                <form method="POST" action="{{ route('groups.destroy', $group) }}" style="margin-top: 1rem;">
                     @csrf
-                    <input type="email" name="email" placeholder="teammate@example.com" required class="input input-grow">
-                    <button type="submit" class="btn btn-dark">Add by email</button>
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger btn-sm" style="width: 100%; justify-content: center;"
+                            onclick="return confirm('Delete this list permanently?')">
+                        Delete this list
+                    </button>
                 </form>
-            @endcan
-
-            @can('delete', $group)
-                <form method="POST" action="{{ route('groups.destroy', $group) }}"
-                      onsubmit="return confirm('Delete this list? Tasks go back to their creators.')"
-                      style="margin-top:1rem">
-                    @csrf @method('DELETE')
-                    <button class="btn btn-danger">Delete this list</button>
-                </form>
-            @endcan
+            @endif
         </aside>
 
     </div>{{-- end .group-layout --}}
 
     {{-- edit popups (own tasks only) --}}
     @foreach ($tasks->where('user_id', auth()->id()) as $task)
-        <dialog id="gedit-popup-{{ $task->id }}" class="popup-modal">
+        <dialog id="edit-popup-{{ $task->id }}" class="popup-modal">
             <button type="button" class="close-form" onclick="this.closest('dialog').close()">✕</button>
             <h2>Edit Task</h2>
             <form action="{{ route('groups.tasks.submit', [$group, $task]) }}" class="popup-form" method="POST">
@@ -293,6 +280,20 @@
             </form>
         </dialog>
     @endforeach
+</dialog>
+
+{{-- Add member popup --}}
+<dialog id="add-member-popup" class="popup-modal">
+    <button type="button" class="close-form" onclick="this.closest('dialog').close()">X</button>
+    <h2>Add Member</h2>
+    <form action="{{ route('groups.members.store', $group) }}" class="popup-form" method="POST">
+        @csrf
+        <label for="member-email">Member Email</label>
+        <input type="email" id="member-email" name="email" placeholder="teammate@example.com" required>
+
+        <button type="submit">Add by email</button>
+    </form>
+</dialog>
 
     <div id="notif-container"></div>
 
