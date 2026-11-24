@@ -671,6 +671,13 @@ body.default-bg {
     margin-top: 20px;
 }
 
+.trash-tasks .col-actions{
+    width: 1%;
+    white-space: nowrap;
+    text-align: right;
+}
+
+/* ----- dates beyond and not beyond deadline */
 
 .due {
     color: #4b5563;
