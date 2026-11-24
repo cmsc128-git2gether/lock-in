@@ -24,7 +24,6 @@ class TagFactory extends Factory
             'name' => fake()->unique()->word(),
             'color' => fake()->hexColor(),
             'icon'    => 'tag',
-            'user_id' => \App\Models\User::factory(),
         ];
     }
 }

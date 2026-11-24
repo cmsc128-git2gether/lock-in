@@ -320,6 +320,32 @@ document.addEventListener('DOMContentLoaded', () => {
     applyFilters();
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    const dialog = document.getElementById('group-form-popup');
+    const submitBtn = document.getElementById('create-grp-btn');
+    if (!dialog || !submitBtn) return;
+
+    const emailInputs = () => dialog.querySelectorAll('input[name="emails[]"]');
+
+    // enabled only if at least one email field has a valid address
+    function updateCreateButton() {
+        const hasMember = Array.from(emailInputs()).some(
+            (input) => input.value.trim() !== '' && input.checkValidity()
+        );
+        submitBtn.disabled = !hasMember;
+    }
+
+    // typing in any field inside the dialog (also covers fields added later)
+    dialog.addEventListener('input', updateCreateButton);
+
+    // reset when the dialog is closed
+    dialog.addEventListener('close', () => {
+        dialog.querySelector('form')?.reset();
+        updateCreateButton();
+    });
+
+    updateCreateButton(); // correct state on page load
+});
 
 
 window.updateTaskCount = updateTaskCount;
