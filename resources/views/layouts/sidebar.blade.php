@@ -112,7 +112,7 @@
             <label for="group-name">List name</label>
             <input type="text" id="group-name" name="name" maxlength="255" required>
 
-            <label>Add members (optional)</label>
+            <label>Add members (at least 1 member)</label>
             <div id="email-inputs-container" class="email-inputs-list">
                 <div class="email-input-row">
                     <input type="email" name="emails[]" placeholder="teammate@example.com">
@@ -123,7 +123,7 @@
                 + Add another email
             </button>
 
-            <button type="submit">Create</button>
+            <button type="submit" id="create-grp-btn">Create</button>
         </form>
     </dialog>
 

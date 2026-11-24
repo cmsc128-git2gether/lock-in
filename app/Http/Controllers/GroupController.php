@@ -23,7 +23,7 @@ class GroupController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'emails' => 'nullable|array',
+            'emails' => 'required|array|min:1',
             'emails.*' => 'email|exists:users,email' // registered user
         ]);
 
