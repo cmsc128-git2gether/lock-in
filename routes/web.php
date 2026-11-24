@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TaskController;
-use App\Http\Controllers\TagController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\GroupMemberController;
 use App\Http\Controllers\GroupTaskController;
@@ -41,8 +40,6 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/tasks/{id}/destroy', [TaskController::class, 'destroy']);
     Route::patch('/tasks/{id}/restore', [TaskController::class, 'restore']);
     Route::delete('/tasks/{id}/force', [TaskController::class, 'forceDelete']);
-
-    Route::post('/tags', [TagController::class, 'store'])->name('tags.store');
 
      // GROUP ROUTES
     Route::get('/groups', [GroupController::class, 'index'])->name('groups.index');

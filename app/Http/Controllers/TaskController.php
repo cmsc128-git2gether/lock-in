@@ -33,7 +33,7 @@ class TaskController extends Controller
             ->orderByRaw('due_at IS NULL')
             ->get();
         
-        $tags = Tag::mine()->get();
+        $tags = Tag::orderBy('name')->get();
         $priorities = Task:: priorities;
 
         return view('index', ['tasks' => $tasks, 'tags' => $tags, 'priorities' => $priorities]);
@@ -59,7 +59,7 @@ class TaskController extends Controller
     // edit
     public function edit($id){
         // $task = Task::findOrFail($id);
-        $tags = Tag::mine()->get();
+        $tags = Tag::orderBy('name')->get(); //get all tags provided by system (archived: Tag::mine()->get())
         $priorities = Task:: priorities;
         
         // goes to edit page

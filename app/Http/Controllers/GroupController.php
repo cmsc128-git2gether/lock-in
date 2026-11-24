@@ -83,7 +83,7 @@ class GroupController extends Controller
                         ->orderByRaw('due_at IS NULL')
                         ->orderBy('due_at')
                         ->get();
-        $tags = Tag::mine()->get();
+        $tags = Tag::orderBy('name')->get();
         $priorities = Task::priorities;
 
         return view('groups.show', [

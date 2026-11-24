@@ -18,17 +18,17 @@ class TagSeeder extends Seeder
         $tags = [
             [
                 'name' => 'School', 
-                'color' => '#1DAB5D',
+                'color' => '#FFAA00',
                 'icon' => 'academic-cap'
             ],
             [
                 'name' => 'Home', 
-                'color' => '#94AAD1',
+                'color' => '#005EFF',
                 'icon' => 'home'
             ],
             [
                 'name' => 'Other', 
-                'color' => '#CEFF72',
+                'color' => '#F49EFF',
                 'icon' => 'tag'
             ],
            
@@ -37,10 +37,7 @@ class TagSeeder extends Seeder
         //default tags for all users
         foreach (User::all() as $user) {
             foreach ($tags as $tag) {
-                Tag::updateOrCreate(
-                    ['user_id' => $user->id, 'name' => $tag['name']],
-                    ['color' => $tag['color'], 'icon' => $tag['icon']]
-                );
+                Tag::updateOrCreate(['name' => $tag['name']], $tag);
             }
         }
     }

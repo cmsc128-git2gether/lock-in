@@ -56,9 +56,6 @@
             Active Tasks <span class="count-pill" id="task-count">{{ $tasks->where('is_done', false)->count() }}</span>
         </h2>
         <div class="task-actions">
-            {{-- <button type="button" class="btn btn-outline" onclick="document.getElementById('tag-form-popup').showModal()">
-                @svg('heroicon-o-tag', 'w-4 h-4') New tag
-            </button> --}}
             <button type="button" class="btn btn-dark" onclick="document.getElementById('form-popup').showModal()">
                 @svg('heroicon-o-plus', 'w-4 h-4') Add task
             </button>
@@ -118,7 +115,6 @@
                     data-tag="{{ $task->tag->name ?? '' }}"
                     data-tag-id="{{ $task->tag_id ?? 0 }}"
                     data-status="{{ $task->is_done ? 'done' : 'active' }}"
-                    data-tag="{{ $task->tag && $task->tag->user_id == auth()->id() ? $task->tag->name : '' }}">
                     <td>
                         <form action="/tasks/{{ $task->id }}" method="POST" class="checkbox-form">
                             @csrf
@@ -134,7 +130,7 @@
                     </td>
                     <td><span class="priority {{ $task->priority }}">{{ $task->priority }}</span></td>
                     <td>
-                        @if ($task->tag && $task->tag->user_id == auth()->id())
+                        @if ($task->tag)
                             <span class="tag" style="--tag: {{ $task->tag->color ?? '#3b82f6' }}">
                                 <span class="tag-icon">
                                     @svg('heroicon-o-' . ($task->tag->icon ?? 'tag'), 'w-full h-full')
@@ -235,6 +231,4 @@
         </form>
     </dialog>
 
-@include('components.add-tag-modal')
-@include('components.add-task-modal')
 @endsection

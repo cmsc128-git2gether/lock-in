@@ -296,5 +296,4 @@
 
     <div id="notif-container"></div>
 
-    @include('components.add-tag-modal')
 @endsection
