@@ -246,7 +246,7 @@
 
     {{-- edit popups (own tasks only) --}}
     @foreach ($tasks->where('user_id', auth()->id()) as $task)
-        <dialog id="edit-popup-{{ $task->id }}" class="popup-modal">
+        <dialog id="gedit-popup-{{ $task->id }}" class="popup-modal">
             <button type="button" class="close-form" onclick="this.closest('dialog').close()">✕</button>
             <h2>Edit Task</h2>
             <form action="{{ route('groups.tasks.submit', [$group, $task]) }}" class="popup-form" method="POST">
