@@ -231,4 +231,6 @@
         </form>
     </dialog>
 
+@include('components.add-task-modal')
+
 @endsection
