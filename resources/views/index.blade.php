@@ -6,7 +6,6 @@
     @section('content')
  
     <div class="main-content">
-        <div class="main-content">
             @php
                 $hour = now()->hour;
                 $greeting = $hour < 12 ? 'Good Morning' : ($hour < 18 ? 'Good Afternoon' : 'Good Evening');
@@ -114,7 +113,7 @@
                     data-priority="{{ $task->priority }}"
                     data-tag="{{ $task->tag->name ?? '' }}"
                     data-tag-id="{{ $task->tag_id ?? 0 }}"
-                    data-status="{{ $task->is_done ? 'done' : 'active' }}"
+                    data-status="{{ $task->is_done ? 'done' : 'active' }}">
                     <td>
                         <form action="/tasks/{{ $task->id }}" method="POST" class="checkbox-form">
                             @csrf
@@ -164,7 +163,6 @@
         </p>
     @endif
 </section>
-        </div>
     </div>
 
     <!-- new task form popup -->
@@ -207,7 +205,7 @@
             </form>
         </dialog>
     @endforeach
-    <div id="notif-container"></div>
+    <div id="notif-container">
     </div>
 
     {{-- new list popup --}}
