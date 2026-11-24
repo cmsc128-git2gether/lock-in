@@ -282,6 +282,41 @@
     @endforeach
 </dialog>
 
+{{-- add group task --}}
+
+<dialog id="group-task-popup" class="popup-modal">
+    <button type="button" class="close-form" onclick="this.closest('dialog').close()">X</button>
+    <h2>Add Group Task</h2>
+    <form action="{{ route('groups.tasks.store', $group) }}" class="popup-form" method="POST">
+        @csrf
+        <label for="gtitle">Task Name</label>
+        <input type="text" id="title" name="title" placeholder="e.g. Sprint 1 Review" required>
+
+        <label for="gdue">Task Due Date and Time</label>
+        <input type="datetime-local" id="gdue" name="due_at">
+
+        <label for="gpriority">Task Priority</label>
+        <select name="priority" id="gpriority" required>
+            @foreach ($priorities as $priority)
+                <option value="{{ $priority }}">{{ $priority }}</option>
+            @endforeach
+        </select>
+
+        <label>Task Tag</label>
+        <select name="tag_id" id="gtag">
+            <option value="">--No Tag--</option>
+            @foreach ($tags as $tag)
+                <option value="{{ $tag->id }}">
+                    {{ $tag->name }}
+                </option>
+            @endforeach
+        </select>
+
+        <button type="submit">Save</button>
+    </form>
+</dialog>
+
+
 {{-- Add member popup --}}
 <dialog id="add-member-popup" class="popup-modal">
     <button type="button" class="close-form" onclick="this.closest('dialog').close()">X</button>
