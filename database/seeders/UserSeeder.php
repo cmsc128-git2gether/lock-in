@@ -13,10 +13,6 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        //how do we even know their passwords???? LMAO
-
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
@@ -27,6 +23,12 @@ class UserSeeder extends Seeder
             'name' => 'Test User 2',
             'email' => 'test2@example.com',
             'password' => 'test1234!!'
+        ]);
+
+        User::factory()->create([
+            'name' => 'Test User 3',
+            'email' => 'test3@example.com',
+            'password' => 'hello1234!!'
         ]);
     }
 }

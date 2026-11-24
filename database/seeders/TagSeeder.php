@@ -17,6 +17,11 @@ class TagSeeder extends Seeder
     {
         $tags = [
             [
+                'name' => 'Personal', 
+                'color' => '#af4dd6',
+                'icon' => 'user'
+            ],
+            [
                 'name' => 'School', 
                 'color' => '#FFAA00',
                 'icon' => 'academic-cap'
@@ -28,7 +33,7 @@ class TagSeeder extends Seeder
             ],
             [
                 'name' => 'Other', 
-                'color' => '#F49EFF',
+                'color' => '#df73b0',
                 'icon' => 'tag'
             ],
            
