@@ -19,20 +19,6 @@ class GroupController extends Controller
         return view('groups.index', ['groups' => $groups]);
     }
 
-    // create group
-    // public function store(Request $request) {
-    //     $info = $request->validate(['name' => 'required|string|max:255']);
-
-    //     $group = DB::transaction(function () use ($info, $request) {
-    //         $group = Group::create(['name' => $info['name'], 'owner_id' => $request->user()->id]);
-    //         $group->members()->attach($request->user()->id, ['role' => 'owner']);
-
-    //         return $group;
-    //     });
-
-    //     return redirect()->route('groups.show', $group);
-    // }
-
     public function store(Request $request) 
     {
         $validated = $request->validate([
@@ -83,7 +69,7 @@ class GroupController extends Controller
                         ->orderByRaw('due_at IS NULL')
                         ->orderBy('due_at')
                         ->get();
-        $tags = Tag::orderBy('name')->get();
+        $tags = Tag::all();
         $priorities = Task::priorities;
 
         return view('groups.show', [
@@ -99,8 +85,16 @@ class GroupController extends Controller
     public function destroy(Group $group) {
         Gate::authorize('delete', $group);
 
-        $group->delete();
+        // owned tasks of the signed in user will go to recently deleted
+        DB::transaction(function () use ($group) {
+            $ownedTasks = $group->tasks()
+                ->where('tasks.user_id', auth()->id())
+                ->pluck('tasks.id');
 
-        return redirect()->route('groups.show');
+            Task::whereIn('id', $ownedTasks)->delete();
+            $group->delete();
+        }); 
+
+        return redirect()->route('dashboard');
     }
 }
