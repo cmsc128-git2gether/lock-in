@@ -10,10 +10,11 @@ class Tag extends Model
     /** @use HasFactory<\Database\Factories\TagFactory> */
     use HasFactory;
     
-    protected $fillable = ['name', 'color'];
+    protected $fillable = ['name', 'color', 'icon', 'user_id'];
 
     public function tasks() {
         return $this->hasMany(Task::class);
     }
+
 }
 

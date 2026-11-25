@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use App\Models\Tag;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
+
 
 class TagSeeder extends Seeder
 {
@@ -14,13 +16,34 @@ class TagSeeder extends Seeder
     public function run(): void
     {
         $tags = [
-            ['name' => 'School', 'color' => '#ec7c66'],
-            ['name' => 'Personal', 'color' => '#6cb07a'],
-            ['name' => 'Others', 'color' => '#afaeae'],
+            [
+                'name' => 'Personal', 
+                'color' => '#af4dd6',
+                'icon' => 'user'
+            ],
+            [
+                'name' => 'School', 
+                'color' => '#FFAA00',
+                'icon' => 'academic-cap'
+            ],
+            [
+                'name' => 'Home', 
+                'color' => '#005EFF',
+                'icon' => 'home'
+            ],
+            [
+                'name' => 'Other', 
+                'color' => '#df73b0',
+                'icon' => 'tag'
+            ],
+           
         ];
 
-        foreach ($tags as $tag) {
-            Tag::firstOrCreate(['name' => $tag['name']], $tag);
+        //default tags for all users
+        foreach (User::all() as $user) {
+            foreach ($tags as $tag) {
+                Tag::updateOrCreate(['name' => $tag['name']], $tag);
+            }
         }
     }
 }

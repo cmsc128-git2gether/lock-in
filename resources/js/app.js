@@ -1,5 +1,43 @@
 import './bootstrap';
 
+// prevent double submission
+document.addEventListener('submit', (e) => {
+    if (e.defaultPrevented) return;
+    const btn = e.submitter || e.target.querySelector('button[type="submit"]');
+    if (!btn || btn.disabled) return;
+    setTimeout(() => {
+        btn.dataset.label = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner" aria-hidden="true"></span> Saving…';
+    }, 0);
+});
+
+// restore buttons when the user navigates back (bfcache)
+window.addEventListener('pageshow', (e) => {
+    if (!e.persisted) return;
+    document.querySelectorAll('button[data-label]').forEach(b => {
+        b.disabled = false; b.innerHTML = b.dataset.label;
+    });
+});
+
+function updateTaskCount() {
+    const rows = [...document.querySelectorAll('#table-tasks tbody tr')].filter(r => !r.dataset.deleted);
+    const active = rows.filter(r => r.dataset.status === 'active');
+    const done = rows.length - active.length;
+    const overdue = active.filter(r => r.dataset.overdue === '1').length;
+
+    const set = (id, n) => { const el = document.getElementById(id); if (el) el.textContent = n; };
+    set('task-count', active.length);
+    set('stat-active', active.length);
+    set('stat-done', done);
+    set('stat-overdue', overdue);
+    document.getElementById('stat-overdue-box')?.classList.toggle('stat-alert', overdue > 0);
+
+    const label = document.querySelector('.switch-text');
+    if (label) label.textContent = `Show completed (${done})`;
+}
+
+
 function toggle(event) {
     event.stopPropagation();
     const currMenu = event.currentTarget.nextElementSibling;
@@ -11,7 +49,6 @@ function toggle(event) {
     currMenu.classList.toggle('show');
 }
 
-window.toggle = toggle;
 
 document.addEventListener('click', () => {
     document.querySelectorAll('.dropdown-choices').forEach(menu => {
@@ -26,6 +63,8 @@ function handleDelete(button){
     const row = button.closest('tr');
 
     row.style.display = 'none';
+    row.dataset.deleted = '1';
+    updateTaskCount();
 
     fetch(`/tasks/${taskId}/destroy`, {
         method: 'DELETE',
@@ -39,7 +78,9 @@ function handleDelete(button){
     })
     .catch(() => {
         row.style.display = ''; // restore row if delete failed
-        alert('Something went wrong deleting that task.');
+        delete row.dataset.deleted;
+        updateTaskCount();
+        showToast('Something went wrong deleting that task.');
     });
 
 }
@@ -67,6 +108,7 @@ function showUndo(taskId, taskTitle, row){
     const timeout = setTimeout(() => {
         notif.remove();
         row.remove();
+        updateTaskCount();
     }, duration);
 
 
@@ -90,15 +132,17 @@ function restoreTask(taskId, row, notif) {
     .then(response => {
         if (!response.ok) throw new Error('Restore failed');
         row.style.display = '';
+        delete row.dataset.deleted;
+        updateTaskCount();
         notif.remove();
     })
     .catch(() => {
-        alert('Could not undo — please refresh.');
+        showToast('Could not undo — please refresh.');
     });
 }
 
 //filter feature
-const activeFilters = { priority: '', tag: '', status: '' };
+const activeFilters = { priority: '', tag: '', status: 'active' };
 
 function toggleColFilter(event) {
     event.stopPropagation();
@@ -106,7 +150,7 @@ function toggleColFilter(event) {
     document.querySelectorAll('.th-filter-choices.show, .dropdown-choices.show').forEach(e => {
         if (e !== panel) e.classList.remove('show');
     });
-    panel.classList.toggle('show');
+    if (panel) panel.classList.toggle('show');
 }
 
 function filterByColumn(column, value) {
@@ -127,6 +171,8 @@ function applyFilters() {
 document.addEventListener('click', () => {
     document.querySelectorAll('.th-filter-choices.show, .dropdown-choices.show').forEach(el => el.classList.remove('show'));
 });
+
+
 
 
 const priorityWeight = {
@@ -183,7 +229,7 @@ function sortTable(key) {
 
 }
  
-// groupings
+// groupings for tasks
 function applyGrouping() {
     const tbody = document.querySelector('#table-tasks tbody');
     if (!tbody) return;
@@ -217,17 +263,130 @@ document.getElementById('groupByTag')?.addEventListener('change', function () {
         document.querySelectorAll('.group-header-row').forEach(el => el.remove());
     }
 });
+
 function togglePopup() {
     const overlay = document.getElementById('popupOverlay');
     overlay.classList.toggle('active');
 }
 
+//toggle password vis
+function togglePassword(inputId, button) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        button.textContent = 'Hide';
+    } else {
+        input.type = 'password';
+        button.textContent = 'Show';
+    }
+}
+
+function addEmailField() {
+    const container = document.getElementById('email-inputs-container');
+    if (!container) return;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'email-input-row';
+    wrapper.innerHTML = `
+        <input type="email" name="emails[]" placeholder="teammate@example.com">
+        <button type="button" class="btn btn-outline remove-email-btn" onclick="this.parentElement.remove()" aria-label="Remove email">&times;</button>
+    `;
+    container.appendChild(wrapper);
+    wrapper.querySelector('input').focus();
+}
+
+//grid selector for custom tags:
+document.querySelectorAll('.icon-grid input[type="radio"]').forEach(radio => {
+        if(radio.checked) {
+            radio.nextElementSibling.style.borderColor = '#3b82f6';
+            radio.nextElementSibling.style.background = '#eff6ff';
+        }
+
+        radio.addEventListener('change', function() {
+            document.querySelectorAll('.icon-choice-box').forEach(box => {
+                box.style.borderColor = '#e2e8f0';
+                box.style.background = '#fff';
+            });
+            if(this.checked) {
+                this.nextElementSibling.style.borderColor = '#3b82f6';
+                this.nextElementSibling.style.background = '#eff6ff';
+            }
+        });
+    });
 
 
+//global Document Event Listeners
+document.addEventListener('click', () => {
+    document.querySelectorAll('.th-filter-choices.show, .dropdown-choices.show').forEach(e => e.classList.remove('show'));
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const showDone = document.getElementById('showDone');
+    if (showDone) activeFilters.status = showDone.checked ? '' : 'active';
+
+    // for the email class deisgn
+    const emailInput = document.getElementById('email-input');
+    const addEmailBtn = document.getElementById('add-email-btn');
+
+    if (emailInput && addEmailBtn) {
+        addEmailBtn.addEventListener('click', addEmailChip);
+
+        emailInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
+    }
+    applyFilters();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const dialog = document.getElementById('group-form-popup');
+    const submitBtn = document.getElementById('create-grp-btn');
+    if (!dialog || !submitBtn) return;
+
+    const emailInputs = () => dialog.querySelectorAll('input[name="emails[]"]');
+
+    // enabled only if at least one email field has a valid address
+    function updateCreateButton() {
+        const hasMember = Array.from(emailInputs()).some(
+            (input) => input.value.trim() !== '' && input.checkValidity()
+        );
+        submitBtn.disabled = !hasMember;
+    }
+
+    // typing in any field inside the dialog (also covers fields added later)
+    dialog.addEventListener('input', updateCreateButton);
+
+    // reset when the dialog is closed
+    dialog.addEventListener('close', () => {
+        dialog.querySelector('form')?.reset();
+        updateCreateButton();
+    });
+
+    updateCreateButton(); // correct state on page load
+});
+//custom alert
+function showToast(message) {
+    const box = document.getElementById('notif-container');
+    if (!box) return;
+    const n = document.createElement('div');
+    n.className = 'notif';
+    n.setAttribute('role', 'alert');
+    const s = document.createElement('span');
+    s.textContent = message;
+    n.appendChild(s);
+    box.appendChild(n);
+    setTimeout(() => n.remove(), 4000);
+}
 
 
+window.updateTaskCount = updateTaskCount;
+window.toggle = toggle;
 window.toggleColFilter = toggleColFilter;
 window.filterByColumn = filterByColumn;
 window.handleDelete = handleDelete;
 window.restoreTask = restoreTask;
 window.sortTable = sortTable;
+window.togglePassword = togglePassword;
+window.addEmailField = addEmailField;
