@@ -13,7 +13,7 @@
 
         <section class="card task-card">
             <h2 class="task-title" style="margin-bottom: 0.25rem;">Profile Information</h2>
-            <p class="profile-desc">Update your name and email address. Changing your email will require logging in again.</p>
+            <p class="profile-desc">Update your name.</p>
             @include('profile.partials.update-profile-information-form')
         </section>
 

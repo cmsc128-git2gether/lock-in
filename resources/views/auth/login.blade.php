@@ -27,7 +27,9 @@
         <div class="auth-checkbox-row">
 
             @if (Route::has('password.request'))
-                <a href="{{ route('password.request') }}">Forgot password?</a>
+                <div class="auth-footer">
+                    <a href="{{ route('password.request') }}">Forgot password?</a>
+                </div>
             @endif
         </div>
 

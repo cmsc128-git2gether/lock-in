@@ -30,21 +30,7 @@ class ProfileController extends Controller
         $user = $request->user();
         $user->fill($request->validated());
 
-        $emailChanged = $user->isDirty('email');
-
-        if ($emailChanged) {
-            $user->email_verified_at = null;
-        }
-
         $user->save();
-
-        if ($emailChanged) {
-            Auth::guard('web')->logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            return redirect()->route('login')->with('status', 'Email updated. Please log in with your new email.');
-        }
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }

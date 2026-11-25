@@ -1,6 +1,6 @@
-<x-guest-layout>
-    <p class="auth-footer" style="margin-top:0; margin-bottom:1.25rem;">
-        Enter your email and we'll send you a password reset link.
+<x-guest-layout class="login-bg">
+    <p class="auth-footer" style="margin-top: 0; margin-bottom: 1.25rem; text-align: left;">
+        Forgot your password? Enter your email address and we will send you a password reset link.
     </p>
 
     @if (session('status'))
@@ -18,6 +18,10 @@
             @enderror
         </div>
 
-        <button type="submit" class="auth-button">Email reset link</button>
+        <button type="submit" class="auth-button">Email Password Reset Link</button>
+
+        <p class="auth-footer">
+            Remembered your password? <a href="{{ route('login') }}">Back to log in</a>
+        </p>
     </form>
 </x-guest-layout>

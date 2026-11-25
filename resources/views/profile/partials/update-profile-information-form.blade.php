@@ -13,14 +13,5 @@
             <div class="auth-error">{{ $message }}</div>
         @enderror
     </div>
-
-    <div class="profile-field">
-        <label for="email">Email</label>
-        <input id="email" type="email" name="email" value="{{ old('email', $user->email) }}" required>
-        @error('email')
-            <div class="auth-error">{{ $message }}</div>
-        @enderror
-    </div>
-
     <button type="submit" class="profile-save-btn">Save</button>
 </form>
