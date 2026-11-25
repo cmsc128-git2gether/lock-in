@@ -184,7 +184,7 @@ Group and Collaboration routes are defined in `routes/web.php`.
 | `PATCH` | `/groups/{group}/tasks/{task}/restore` | `GroupTaskController@restore` | Allow restores of group deleted tasks from recently deleted. |
 
 \
-Helper route for daily pruning of Recently Deleted in `routes/console.php`.
+Helper route for daily pruning of Recently Deleted in `routes/console.php`. \
 `Schedule::command('model:prune')->daily();`
 
 ## Authentication: Sessions and Password Recovery
