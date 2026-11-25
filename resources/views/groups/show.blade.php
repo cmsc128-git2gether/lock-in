@@ -139,7 +139,12 @@
                                 </form>
                             </td>
                             <td class="due {{ $overdue ? 'overdue' : '' }}">
-                                {{ $due ? $due->format('M d, Y · g:i A') : '—' }}
+                                @if ($due)
+                                    {{ $due->format('M d, Y') }}<br>
+                                    {{ $due->format('g:i A') }}
+                                @else
+                                    —
+                                @endif
                             </td>
                             <td><span class="priority {{ $task->priority }}">{{ $task->priority }}</span></td>
                             <td>
@@ -157,7 +162,7 @@
                             <td>
                                 <span class="by">
                                     <span class="avatar avatar-sm">{{ strtoupper(substr($who, 0, 1)) }}</span>
-                                    {{ $who }}
+                                    <span class="by-name">{{ $who }}</span>
                                 </span>
                             </td>
                             <td class="col-actions">
@@ -289,7 +294,7 @@
     <h2>Add Group Task</h2>
     <form action="{{ route('groups.tasks.store', $group) }}" class="popup-form" method="POST">
         @csrf
-        <label for="gtitle">Task Name</label>
+        <label for="gtitle">Task Name (required)</label>
         <input type="text" id="title" name="title" placeholder="e.g. Sprint 1 Review" required>
 
         <label for="gdue">Task Due Date and Time</label>

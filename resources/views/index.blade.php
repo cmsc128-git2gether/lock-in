@@ -126,7 +126,7 @@
                         </form>
                     </td>
                     <td class="due {{ $overdue ? 'overdue' : '' }}">
-                        {{ $due ? $due->format('M d, Y · g:i A') : '—' }}
+                        {{ $due ? $due->format('M d, Y (g:i A)') : '—' }}
                     </td>
                     <td><span class="priority {{ $task->priority }}">{{ $task->priority }}</span></td>
                     <td>
