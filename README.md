@@ -121,11 +121,11 @@ Laravel splits backend logic across two folders (`routes` and `app`).
    Register and verify your email. You are now onboard!
 
 ## Running the Deployed Web App
-1. **Go to**
-   lorem ipsum
+1. **Go to this link: http://letslockin.infy.click/** \
+   It lands you to the login or sign up page.
 
-
-
+2. **Register with a valid email** \
+   The app will send a verification email to your account. Click the button and you're ready to board!
 
 ## Data Operations (Routes and API endpoints)
 
