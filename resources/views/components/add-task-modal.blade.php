@@ -5,7 +5,7 @@
     <form method="POST" action="/tasks" class="popup-form">
         @csrf
 
-        <label for="task-title">Task Name</label>
+        <label for="task-title">Task Name (required)</label>
         <input type="text" id="task-title" name="title" required placeholder="What needs to be done?">
 
         <label for="task-due">Due Date and Time</label>
