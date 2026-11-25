@@ -1483,6 +1483,32 @@ button:disabled {
     opacity: .6;
     cursor: not-allowed; 
 }
+/* error and success message  */
+
+.alert {
+    padding: 0.85rem 1.1rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.alert ul {
+    margin: 0.25rem 0 0 1.25rem;
+    padding: 0;
+}
+
+.alert-error {
+    background-color: #fee2e2;
+    border: 1px solid #fca5a5;
+    color: #991b1b;
+}
+
+.alert-success {
+    background-color: #dcfce7;
+    border: 1px solid #86efac;
+    color: #166534;
+}
+
 
 /* for the mobile requirement */
 @media (max-width: 700px) {
