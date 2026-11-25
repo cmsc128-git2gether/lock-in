@@ -20,6 +20,11 @@ body.auth-body {
     position: relative;
     min-height: 100vh;
     background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e6eaed;
+    margin: 0;
 }
 
 body.auth-body::before {
@@ -69,12 +74,6 @@ body.default-bg {
     padding: 1.5rem;
 }
 
-.app-shell .main-content {
-    flex: 1;
-    min-width: 0;
-    margin: 0;
-    padding: 0;
-}
 
 /* ------- sidebar ----- */
 .sidebar {
@@ -123,6 +122,11 @@ body.default-bg {
     background: var(--color-accent);
     color: #fff;
     cursor: pointer;
+}
+
+.sidebar-add svg {
+    width: 12px;
+    height: 12px;
 }
 
 .brand {
@@ -195,15 +199,7 @@ body.default-bg {
     font-weight: 600;
 }
 
-.sidebar-add {
-    width: 24px;
-    height: 24px;
-}
 
-.sidebar-add svg {
-    width: 12px;
-    height: 12px;
-}
 
 .sidebar-sublist {
     display: flex;
@@ -277,21 +273,9 @@ body.default-bg {
 
 .group-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 300px;
+    grid-template-columns: minmax(0, 1fr) 260px;
     gap: 1.25rem;
     align-items: start;
-}
-.group-members { position: sticky; top: 1.5rem; }
-
-.group-members .member-text small {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-@media (max-width: 900px) {
-    .group-layout { grid-template-columns: 1fr; }
-    .group-members { position: static; }
 }
 
 
@@ -364,13 +348,6 @@ body.default-bg {
     padding: 2rem 1.5rem;
 }
 
-.page-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #1e293b;
-    margin-bottom: 1.5rem;
-}
-
 /* ---------- shared card ---------- */
 .card {
     background: rgba(255, 255, 255, 0.88);
@@ -385,6 +362,10 @@ body.default-bg {
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
 }
 
 /* ---------- greeting ---------- */
@@ -505,7 +486,10 @@ body.default-bg {
     color: var(--color-accent);
 }
 
-.task-actions { display: flex; gap: .5rem; }
+.task-actions { 
+    display: flex; 
+    gap: .5rem; 
+}
 
 /* -------- buttons ------ */
 .btn {
@@ -646,6 +630,31 @@ body.default-bg {
     
 }
 
+/* group task formatting  */
+.group-layout .task-table th,
+.group-layout .task-table td {
+    padding: .75rem .65rem;
+}
+
+.group-layout .task-table th:first-child,
+.group-layout .task-table td:first-child {
+    padding-left: .25rem;
+}
+
+.group-layout .task-table th:last-child,
+.group-layout .task-table td:last-child {
+    padding-right: 0;
+}
+
+.group-layout .due {
+    white-space: normal;
+    font-size: .8rem;
+}
+
+.group-layout .by {
+    white-space: nowrap;
+}
+
 /* recently deleted format */
 .trash-tasks {
     width: 100%;
@@ -666,10 +675,6 @@ body.default-bg {
     border-top: 1px solid #f0f1f3;
     padding: .85rem 1rem;
     font-size: .875rem;
-}
-
-.task-actions {
-    margin-top: 20px;
 }
 
 .trash-tasks .col-actions{
@@ -703,6 +708,8 @@ body.default-bg {
 .task-table tr.task-done .tag {
     opacity: .45; 
 }
+
+
 
 /* ------- priority + tag  -------- */
 .priority, .tag {
@@ -951,18 +958,6 @@ body.default-bg {
 
 
 /* ---------- AUTH PAGES ---------- */
-/* ---------- AUTH PAGES ---------- */
-/* ---------- AUTH PAGES ---------- */
-
-.auth-body {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #e6eaed;
-    margin: 0;
-}
-
 .auth-wrapper {
     width: 100%;
     max-width: 420px;
@@ -1380,11 +1375,6 @@ body.default-bg {
     margin-bottom:10px;
 }
 
-.sidebard {
-    margin-left: 20px;
-}
-
-
 
 /* group items */
 /* ---------- inputs ---------- */
@@ -1468,7 +1458,14 @@ input[type="checkbox"]:checked + label { text-decoration: line-through; }
 .member-text small {
     font-size: .75rem;
     color: var(--color-muted);
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.25;
 }
+.group-members .avatar {
+    flex: 0 0 30px;
+}
+
 
 /* misc */
 /* spinner */
