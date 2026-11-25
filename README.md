@@ -1,6 +1,6 @@
-# Lock In (Working Title)
+# Lock In
 ## Application Description
-A simple todo list app with task priorities, tags, soft-deletes with undo, and column-based filtering and sorting. Made with Laravel and love <3.
+A simple todo list app with task priorities, tags, soft-deletes with undo and recently deleted, column-based filtering and sorting, and collaborative listing. Made with Laravel and love <3.
 
 ## Features
 * __User Creation__ - allows users to create profile and use the application.
@@ -26,10 +26,10 @@ Laravel splits backend logic across two folders (`routes` and `app`).
 
 | Layer | Choice | Why |
 |---|---|---|
-| Backend framework | **Laravel** (PHP) | Built-in routing, Eloquent ORM, and migrations make CRUD + relationships  fast to set up without manually coding SQL. |
-| Database | **MySQL** | Relational structure fits the data well. Tasks belong to tags via a foreign key (`tag_id`), and Eloquent's relationship methods (`belongsTo`/`hasMany`) can easily map between models. |
+| Backend framework | **Laravel** (PHP-based) | Built-in routing, Eloquent ORM, and migrations make CRUD + relationships  fast to set up without manually coding SQL. |
+| Database | **MySQL** | Relational structure fits the data well. Tasks belong to tags via a foreign key (`tag_id`), and Eloquent's relationship methods (`belongsTo`/`hasMany`) can easily map between models. Relationship between users, tasks, and groups are represented in models with their cardinality. |
 | Frontend | **Blade templates**| Blade keeps the view layer in PHP alongside the backend (no separate frontend framework/build step for components.) |
-| Authentication approach | **Breeze** | Implements Laravel's authentication methods, such as login, register, password reset, email verification, and email information. |
+| Authentication approach | **Breeze** | Implements Laravel's authentication methods, such as login, register, password reset, email verification, email information and sessions. This allows multi-user accounts and collaboration handling easier and safer via controllers, models, and routing. |
 | Asset bundling | **Vite** | Laravel's default asset bundler. Compiles and hot-reloads CSS/JS during development (`npm run dev`). |
 
 
@@ -40,22 +40,23 @@ Laravel splits backend logic across two folders (`routes` and `app`).
 - Composer
 - Node.js & npm
 - MySQL (or another supported DB)
-- mailtrap
+- 2FA Gmail Account App Password
 
-### Mailtrap Setup
-1. **Create an account using email**\
-   Register account [here](https://mailtrap.io/).
+### 2FA Gmail Account App Password Setup
+1. **Create a Google account**\
+   Register account [here](https://accounts.google.com/).
 
-2. **Look for your sandbox credentials**\
-   Get your username and password, save it for your mailtrap configuration later on. This will serve as your inbox for email verification and password reset requests.
+2. **Setup your account and your 2FA**\
+   Turn on your 2-Step Verification, add any authentication method you have in your account.
 
-
+3. **Create App Password**\
+   Create an app password from your 2FA. Input the name "Lock-In" and record the 16-digit password generated.
 
 ### Setup Steps
 
 1. **Clone the repo**
    ```
-   git clone https://github.com/cmsc128-git2gether/lock-in
+   git clone https://github.com/cmsc128-git2gether/lock-in.git
    ```
 
 2. **Install PHP dependencies**
@@ -80,19 +81,19 @@ Laravel splits backend logic across two folders (`routes` and `app`).
    DB_CONNECTION=mysql
    DB_HOST=127.0.0.1
    DB_PORT=3306
-   DB_DATABASE=toDo
+   DB_DATABASE=lock-in
    DB_USERNAME=root
    DB_PASSWORD=
 
    /* blocks of code */
 
    MAIL_MAILER=smtp
-   MAIL_HOST=sandbox.smtp.mailtrap.io
+   MAIL_HOST=smtp.gmail.com
    MAIL_PORT=587
-   MAIL_USERNAME=<you_username>
-   MAIL_PASSWORD=<your_password>
+   MAIL_USERNAME=<your_email>
+   MAIL_PASSWORD=<your_generated_app_password>
    MAIL_ENCRYPTION=tls
-   MAIL_FROM_ADDRESS="hello@demomailtrap.co"
+   MAIL_FROM_ADDRESS="<your_email>"
    MAIL_FROM_NAME="${APP_NAME}"
    ```
    Make sure the database itself exists (create it manually in MySQL if needed).
@@ -101,7 +102,7 @@ Laravel splits backend logic across two folders (`routes` and `app`).
    ```
    php artisan migrate --seed
    ```
-   This creates the `users`, `tags`, and `tasks` tables, and seeds a few predefined tags (School, Personal, Others).
+   This creates the `users`, `tags`, `tasks`, `groups`, `group_members`, and `group_tasks` tables, and seeds a few predefined tags (School, Personal, Home, Others).
 
 7. **Build frontend assets**
    ```
@@ -117,10 +118,16 @@ Laravel splits backend logic across two folders (`routes` and `app`).
    Ctrl+Click on the local host url to access the app.
 
 10. **Create your Account** \
-   Register and verify your email using [mailtrap](https://mailtrap.io/)
+   Register and verify your email. You are now onboard!
+
+## Running the Deployed Web App
+1. **Go to**
+   lorem ipsum
 
 
-## Data Operations (Routes)
+
+
+## Data Operations (Routes and API endpoints)
 
 Routes are used directly by Blade forms and JavaScript `fetch` calls within the app itself. 
 
@@ -159,20 +166,26 @@ Authentication routes are defined in `routes/auth.php`.
 | `PUT` | `/password` | `PasswordController@update` | Enables changes for users to change their password if the user requested. |
 | `POST` | `/logout` | `AuthenticatedSessionController@destroy` | Ends the session of the user. |
 
+\
+Group and Collaboration routes are defined in `routes/web.php`.
+| Method | Endpoint | Controller Method | Description |
+|---|---|---|---|
+| `GET` | `/groups` | `GroupController@index` | Shows group lists on side bar. |
+| `POST` | `/groups` | `GroupController@store` | Allows use to create groups. |
+| `GET` | `/groups/{group}` | `GroupController@show` | Shows group details. |
+| `DELETE` | `/groups/{group}` | `GroupController@destroy` | Deletes group list and its tasks. |
+| `POST` | `/groups/{group}/members` | `GroupMemberController@index` | Allows adding of group members. |
+| `DELETE` | `/groups/{group}/members` | `GroupMemberController@destroy` | Allows removal or leaving of group members. |
+| `POST` | `/groups/{group}/tasks` | `GroupTaskController@store` | Creation of group tasks. |
+| `PATCH` | `/groups/{group}/tasks` | `GroupTaskController@update` | Toggle done of group tasks. |
+| `GET` | `/groups/{group}/tasks/{task}/edit` | `GroupTaskController@edit` | Editing group task form. |
+| `PATCH` | `/groups/{group}/tasks/{task}/submit` | `GroupTaskController@submit` | Submit changes in group task form. |
+| `DELETE` | `/groups/{group}/tasks/{task}` | `GroupTaskController@destroy` | Allow soft deletes of group tasks, goes to the recently deleted. |
+| `PATCH` | `/groups/{group}/tasks/{task}/restore` | `GroupTaskController@restore` | Allow restores of group deleted tasks from recently deleted. |
 
-### Example: Creating a task and task ownership(`POST /tasks`)
-
-Request body:
-```
-title=Finish CMSC 130 lab
-due_at=2026-09-15T23:59
-priority=High
-tag_id=1
-user_id=1
-```
-
-Response: \
-redirects back to `/` with the new task visible in the list.
+\
+Helper route for daily pruning of Recently Deleted in `routes/console.php`.
+`Schedule::command('model:prune')->daily();`
 
 ## Authentication: Sessions and Password Recovery
 
@@ -185,7 +198,6 @@ Because HTTP is stateless, the app uses server-side sessions to remember who is 
 1. Upon login success,  session ID is regenerated to prevent session fixation, and the user's ID is stored in the session.
 2. The browser keeps only an encrypted session cookie. On each request, Laravel uses it to load the current user.
 3. On logout (`POST /logout`), the session is invalidated and the CSRF token is regenerated.
-
 
 ### Password Recovery
 
@@ -281,14 +293,28 @@ Schema::create('group_tasks', function (Blueprint $table) {
 * Group can belong to many group members
 * Group can belong to an owner
 
-## Example: Task Ownership
+### Example: Creating a task and task ownership(`POST /tasks`)
+
+Request body:
+```
+title=Finish CMSC 130 lab
+due_at=2026-09-15T23:59
+priority=High
+tag_id=1
+user_id=1
+```
+
+Response: \
+redirects back to `/` with the new task visible in the list.
+
+### Example: Group task ownership(`POST /groups/{group}/tasks`)
 Utilizes auth and auth routes from activity 2
 
-Ensures routes are only accessible by authenticated user
+Ensures routes are only accessible by authenticated and verified user
 ```
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
    // Routes for tasks and groups
-}
+});
 ```
 
 Checks for Task where user_id should be the authenticated logged in user 
